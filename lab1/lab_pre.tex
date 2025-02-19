@@ -1,0 +1,62 @@
+\usepackage{geometry}
+
+\usepackage{amsmath}
+\usepackage{amssymb,amsfonts,textcomp}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{times} % Times New Roman font
+\usepackage{setspace}
+\usepackage[pdftex]{graphicx}
+
+% \usepackage{listings}
+% \lstset{
+%   basicstyle=\fontsize{10}{1.15},
+%   basicstyle=\fontfamily{pcr}\selectfont,
+%   breaklines=true, % Allow breaking lines
+%   tabsize=2, % Tab size
+%   showstringspaces=false, % Don't show spaces in strings
+%   %frame=single, % Add a frame around the lstlisting content
+% }
+
+\usepackage{xcolor}
+\usepackage{listings}
+
+\lstdefinestyle{pythonstyle}{
+    language=Python,
+    backgroundcolor=\color{white},   % set background color
+    basicstyle=\ttfamily\footnotesize, % set font and size
+    keywordstyle=\color{blue},        % color of keywords
+    commentstyle=\color{green},       % color of comments
+    stringstyle=\color{red},          % color of strings
+    numbers=left,                    % show line numbers
+    numberstyle=\tiny\color{gray},    % style of line numbers
+    stepnumber=1,                    % number every line
+    numbersep=5pt,                   % distance of line numbers from code
+    showstringspaces=false,           % don't show spaces in strings
+    breaklines=true,                 % break lines if too long
+    breakatwhitespace=true,          % break lines at whitespace
+    tabsize=4,                       % set tab size
+}
+
+\lstset{style=pythonstyle}  % Apply the style globally
+
+
+% Set line spacing to 1.5
+\setstretch{1.5}
+
+\geometry{a4paper, portrait, margin=0.7in, nohead, nofoot}
+
+\usepackage{titlesec}
+\titleformat{\section}[block]{\normalfont\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}[block]{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+
+\newcommand{\Num}{}
+\newcommand{\Topic}{}
+
+\newcommand{\labno}[1]{%
+    \renewcommand{\Num}{#1}%
+}
+
+\newcommand{\labtopic}[1]{%
+    \renewcommand{\Topic}{#1}%
+}

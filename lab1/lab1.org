@@ -1,0 +1,403 @@
+#+title: Laboratory Work 1
+
+* Algorithm Analysis
+** Objective
+Study and analyze different algorithms for determining Fibonacci n-th term.
+** Tasks
+1. Implement at least 3 algorithms for determining Fibonacci n-th term;
+2. Decide properties of input format that will be used for algorithm analysis;
+3. Decide the comparison metric for the algorithms;
+4. Analyze empirically the algorithms;
+5. Present the results of the obtained data;
+6. Deduce conclusions of the laboratory.
+** Theoretical Notes 
+An alternative to mathematical analysis of complexity is empirical analysis.
+This may be useful for: obtaining preliminary information on the complexity class of an
+algorithm; comparing the efficiency of two (or more) algorithms for solving the same problems;
+comparing the efficiency of several implementations of the same algorithm; obtaining information on the
+efficiency of implementing an algorithm on a particular computer.
+In the empirical analysis of an algorithm, the following steps are usually followed:
+1. The purpose of the analysis is established.
+2. Choose the efficiency metric to be used (number of executions of an operation (s) or time
+execution of all or part of the algorithm.
+3. The properties of the input data in relation to which the analysis is performed are established
+(data size or specific properties).
+4. The algorithm is implemented in a programming language.
+5. Generating multiple sets of input data.
+6. Run the program for each input data set.
+7. The obtained data are analyzed.
+   
+The choice of the efficiency measure depends on the purpose of the analysis. If, for example, the
+aim is to obtain information on the complexity class or even checking the accuracy of a theoretical
+estimate then it is appropriate to use the number of operations performed. But if the goal is to assess the
+behavior of the implementation of an algorithm then execution time is appropriate.
+
+After the execution of the program with the test data, the results are recorded and, for the purpose
+of the analysis, either synthetic quantities (mean, standard deviation, etc.) are calculated or a graph with
+appropriate pairs of points (i.e. problem size, efficiency measure) is plotted.
+
+** Introduction
+The Fibonacci sequence is the series of numbers where each number is the sum of the two
+preceding numbers. For example: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, …
+Mathematically we can describe this as: xn= xn-1 + xn-2.
+
+Many sources claim this sequence was first discovered or "invented" by Leonardo Fibonacci. The
+Italian mathematician, who was born around A.D. 1170, was initially known as Leonardo of Pisa. In the
+19th century, historians came up with the nickname Fibonacci (roughly meaning "son of the Bonacci
+clan") to distinguish the mathematician from another famous Leonardo of Pisa.
+There are others who say he did not. Keith Devlin, the author of Finding Fibonacci: The Quest to
+Rediscover the Forgotten Mathematical Genius Who Changed the World, says there are ancient Sanskrit
+texts that use the Hindu-Arabic numeral system - predating Leonardo of Pisa by centuries.
+But, in 1202 Leonardo of Pisa published a mathematical text, Liber Abaci. It was a “cookbook” written
+for tradespeople on how to do calculations. The text laid out the Hindu-Arabic arithmetic useful for
+tracking profits, losses, remaining loan balances, etc, introducing the Fibonacci sequence to the Western
+world.
+
+Traditionally, the sequence was determined just by adding two predecessors to obtain a new
+number, however, with the evolution of computer science and algorithmics, several distinct methods for
+determination have been uncovered. The methods can be grouped in 4 categories, Recursive Methods,
+Dynamic Programming Methods, Matrix Power Methods, and Benet Formula Methods. All those can be
+implemented naively or with a certain degree of optimization, that boosts their performance during
+analysis.
+
+As mentioned previously, the performance of an algorithm can be analyzed mathematically
+(derived through mathematical reasoning) or empirically (based on experimental observations).
+Within this laboratory, we will be analyzing the 6 algorithms empirically.
+** Comparison Metric
+The comparison metric for this laboratory work will be considered the time of execution of each algorithm (T(n)).
+** Input Format
+As input, each algorithm will receive two series of numbers that will contain the order of the
+Fibonacci terms being looked up. The first series will have a more limited scope, (5, 7, 10, 12, 15, 17, 20,
+22, 25, 27, 30, 32, 35, 37, 40, 42, 45), to accommodate the recursive method, while the second series will
+have a bigger scope to be able to compare the other algorithms between themselves (501, 631, 794, 1000,
+1259, 1585, 1995, 2512, 3162, 3981, 5012, 6310, 7943, 10000, 12589, 15849).
+* Implementation
+All four algorithms will be implemented in their naïve form in python an analyzed empirically.
+based on the time required for their completion. While the general trend of the results may be similar to
+other experimental observations, the particular efficiency in rapport with input will vary depending o
+memory of the device used.
+
+** Helper Code
+We will be plotting the performance of algorithms using =matplotlib=, by taking the time taken to compute numbers at even inrervals. For that we define a helper function:
+#+begin_src python :session
+import time
+import matplotlib.pyplot as plt
+
+def plotFibPerformance(fibFunc, numList):
+    times = []
+    for n in numList:
+        start = time.perf_counter()
+        fibFunc(n)
+        times.append(time.perf_counter() - start)
+    
+    plt.figure(figsize=(10, 6))
+    plt.plot(numList, times, 'bo-')
+    plt.xlabel('n-th Fibonacci Number')
+    plt.ylabel('Time (seconds)')
+    plt.title(f'Performance of {fibFunc.__name__}')
+    plt.grid(True)
+    
+    #return times
+    return plt.gcf()
+#+end_src
+
+#+RESULTS:
+: None
+
+And we define our input lists:
+#+begin_src python :session
+input1 = [5, 7, 10, 12, 15, 17, 20, 22, 25, 27, 30, 32, 35,]
+input2 = [501, 631, 794, 1000, 1259, 1585, 1995, 2512, 3162, 3981, 5012, 6310, 7943,]
+#+end_src
+
+#+RESULTS:
+: None
+
+** Recursive Method
+The recursive Fibonacci implementation directly mirrors the mathematical recurrence relation Fn = Fn-1 + Fn-2. For each n, it recursively calculates F(n-1) and F(n-2) until reaching base cases of n=0 or n=1. While elegant, this creates an exponential time complexity of O(2^n) as it recomputes the same Fibonacci numbers many times. For example, computing F(4) requires computing F(3) and F(2), but F(3) also requires computing F(2) again.
+*** Implementation
+#+begin_src python :session
+def recursiveFib(n):
+    if n <= 1:  # Base cases
+        return n
+    return recursiveFib(n-1) + recursiveFib(n-2)
+#+end_src
+
+#+RESULTS:
+: None
+
+*** Results
+Here we are running the function for every number in the list:
+#+begin_src python :session :results graphics file value :file recursiveFib.png
+plotFibPerformance(recursiveFib, input1)
+#+end_src
+
+#+RESULTS:
+[[file:recursiveFib.png]]
+
+** Memoized Recursive
+Memoization caches previously computed values to avoid redundant calculations.
+*** Implementation
+#+begin_src python :session
+def memoFib(n, memo=None):
+    if memo is None: memo = {}
+    if n <= 1: return n
+    if n not in memo:
+        memo[n] = memoFib(n-1, memo) + memoFib(n-2, memo)
+    return memo[n]
+#+end_src
+
+#+RESULTS:
+: None
+
+*** Results
+As expected, we achieve T(n) time complexity:
+#+begin_src python :session :results graphics file value :file memoFib.png
+plotFibPerformance(memoFib, input1)
+#+end_src
+
+#+RESULTS:
+[[file:memoFib.png]]
+
+** Matrix Exponentiation
+The matrix exponentiation method computes Fibonacci numbers in T(log n) time by exploiting the relationship between consecutive Fibonacci numbers and matrix multiplication. The key insight is that:
+
+\[ \begin{bmatrix} F_{n+1} & F_n \\ F_n & F_{n-1} \end{bmatrix} = \begin{bmatrix} 1 & 1 \\ 1 & 0 \end{bmatrix}^n \]
+
+Therefore, \(F_n\) can be computed by raising the base matrix to the nth power using fast exponentiation.
+
+*** Implementation
+This will allow us to deal with overflows
+#+begin_src python :session
+MOD = 10**9 + 7
+#+end_src
+
+#+RESULTS:
+: None
+
+Function to multiply two 2x2 Matrices:
+#+begin_src python :session
+def multiply(A, B):
+    # Matrix to store the result
+    C = [[0, 0], [0, 0]]
+
+    # Matrix Multiply
+    C[0][0] = (A[0][0] * B[0][0] + A[0][1] * B[1][0]) % MOD
+    C[0][1] = (A[0][0] * B[0][1] + A[0][1] * B[1][1]) % MOD
+    C[1][0] = (A[1][0] * B[0][0] + A[1][1] * B[1][0]) % MOD
+    C[1][1] = (A[1][0] * B[0][1] + A[1][1] * B[1][1]) % MOD
+
+    # Copy the result back to the first matrix
+    A[0][0] = C[0][0]
+    A[0][1] = C[0][1]
+    A[1][0] = C[1][0]
+    A[1][1] = C[1][1]
+#+end_src
+
+#+RESULTS:
+: None
+
+Function to find (Matrix \(M ^{expo}\))
+#+begin_src python :session
+def power(M, expo):
+    # Initialize result with identity matrix
+    ans = [[1, 0], [0, 1]]
+
+    # Fast Exponentiation
+    while expo:
+        if expo & 1:
+            multiply(ans, M)
+        multiply(M, M)
+        expo >>= 1
+
+    return ans
+#+end_src
+
+#+RESULTS:
+: None
+
+And the fibonacci function per-ce:
+#+begin_src python :session
+def matrixExpoFib(n):
+    # Base case
+    if n == 0 or n == 1:
+        return 1
+
+    M = [[1, 1], [1, 0]]
+    # F(0) = 0, F(1) = 1
+    F = [[1, 0], [0, 0]]
+
+    # Multiply matrix M (n - 1) times
+    res = power(M, n - 1)
+
+    # Multiply Resultant with Matrix F
+    multiply(res, F)
+
+    return res[0][0] % MOD
+#+end_src
+
+#+RESULTS:
+: None
+
+*** Results
+Here we measure the function, Roughly seeing the T(log n) complexity.
+#+begin_src python :session :results graphics file value :file matrixExpoFib.png
+plotFibPerformance(matrixExpoFib, input2)
+#+end_src
+
+#+RESULTS:
+[[file:matrixExpoFib.png]]
+
+** Fast Doubling method
+The Matrix Exponentiation Method is already discussed before. The Doubling Method can be seen as an improvement to the matrix exponentiation method to find the N-th Fibonacci number although it doesn’t use matrix multiplication itself.
+
+The Fibonacci recursive sequence is given by 
+\[
+F(n+1) = F(n) + F(n-1)
+\]
+
+The Matrix Exponentiation method uses the following formula
+The fast doubling method leverages the relationships between consecutive Fibonacci numbers using these identities:
+\begin{align}
+\label{eq:4}
+F_{2n} = F_n(2F_{n+1} - F_n) \\
+F_{2n+1} = F_{n+1}^2 + F_n^2
+\end{align}
+Like matrix exponentiation, this achieves T(log n) time complexity through recursive doubling.
+
+*** Implementation
+#+begin_src python :session
+MOD = 1000000007
+
+def fastDoublingRec(n, res): 
+     
+    # Base Condition 
+    if (n == 0): 
+        res[0] = 0
+        res[1] = 1
+        return
+         
+    fastDoublingRec((n // 2), res) 
+ 
+    # Here a = F(n) 
+    a = res[0] 
+ 
+    # Here b = F(n+1) 
+    b = res[1] 
+ 
+    c = 2 * b - a 
+ 
+    if (c < 0): 
+        c += MOD 
+ 
+    # As F(2n) = F(n)[2F(n+1) – F(n)] 
+    # Here c = F(2n) 
+    c = (a * c) % MOD 
+ 
+    # As F(2n + 1) = F(n)^2 + F(n+1)^2 
+    # Here d = F(2n + 1) 
+    d = (a * a + b * b) % MOD 
+ 
+    # Check if N is odd 
+    # or even 
+    if (n % 2 == 0): 
+        res[0] = c 
+        res[1] = d 
+    else : 
+        res[0] = d 
+        res[1] = c + d 
+
+def fastDoublingFib(n):
+    res = [0] * 2
+    fastDoublingRec(n, res)
+    return res[0]
+#+end_src
+
+#+RESULTS:
+: None
+
+*** Results
+Here we measure the function. As expected, it is much faster than the matrix exponentiation method, whilst still having resemblence of the \(log(n)\) graph.
+#+begin_src python :session :results  graphics file value :file fastDoublingFib.png
+plotFibPerformance(fastDoublingFib, input2)
+#+end_src
+
+#+RESULTS:
+[[file:fastDoublingFib.png]]
+** Dinamic Programming
+The Dynamic Programming method, similar to the recursive method, takes the straightforward approach of calculating the n-th term. However, instead of calling the function upon itself, it stores just the previous two values. The recurrence relation is:
+\[F_n = F_{n-1} + F_{n-2}\]
+
+*** Implementation
+#+begin_src python :session
+def dpFib(n):
+    if n <= 1: return n
+    a, b = 0, 1
+    for _ in range(2, n + 1):
+        a, b = b, a + b  # Store only previous two values
+    return b
+#+end_src
+
+#+RESULTS:
+: None
+
+This is optimal for computing a single Fibonacci number with respect to time complexity.
+*** Results
+Showing excellent results with a time
+complexity denoted in a corresponding graph of T(n):
+#+begin_src python :session :results graphics file value :file dinamicFib.png
+plotFibPerformance(dpFib, input2)
+#+end_src
+
+#+RESULTS:
+[[file:dinamicFib.png]]
+
+** Binet Formula Method
+The Binet Formula Method is another unconventional way of calculating the n-th term of the
+Fibonacci series, as it operates using the Golden Ratio formula, or phi. However, due to its nature of
+requiring the usage of decimal numbers, at some point, the rounding error of python that accumulates,
+begins affecting the results significantly.
+*** Implementation
+#+begin_src python :session
+import math
+
+
+input3 = [5, 7, 10, 12, 15, 17, 20, 22, 25, 27, 30, 32, 35, 47, 50, 55, 65, 70, 80, 100, 150, 166, 200]
+
+def binetFib(n):
+    
+    # Golden ratio (phi) and its negative counterpart (psi)
+    phi = (1 + math.sqrt(5)) / 2
+    psi = (1 - math.sqrt(5)) / 2
+    
+    # Compute Fibonacci number using full Binet's formula
+    return round((math.pow(phi, n) - math.pow(psi, n)) / math.sqrt(5))
+#+end_src
+
+#+RESULTS:
+: None
+
+*** Results
+The errors starting with around 75-th number make the algorithm unusable in practice, despite its speed.
+#+begin_src python :session :results graphics file value :file binetFormulaFib.png
+plotFibPerformance(binetFib, input3)
+#+end_src
+
+#+RESULTS:
+[[file:binetFormulaFib.png]]
+* Conclusion
+In this laboratory, we analyzed various algorithms for calculating Fibonacci numbers, focusing on their empirical performance. Six distinct methods were implemented and tested: the Recursive Method, Memoized Recursive Method, Matrix Exponentiation, Fast Doubling Method, Dynamic Programming, and the Binet Formula. The main comparison metric was the execution time of each algorithm, measured across different input sizes.
+
+The basic **Recursive Method** demonstrated poor performance as the input size increased due to its exponential time complexity of \(O(2^n)\). This inefficiency was evident in the execution times, particularly for larger values of n, where the algorithm required excessive computation due to recalculating the same Fibonacci numbers multiple times.
+
+The **Memoized Recursive Method** showed significant improvement by storing previously computed values, which reduced the time complexity from \(O(2^n)\) to \(O(n)\). This method proved to be much faster and more efficient than the plain recursive approach, particularly when dealing with larger values of n.
+
+The **Matrix Exponentiation Method** used matrix multiplication to calculate Fibonacci numbers in \(O(\log n)\) time. This logarithmic time complexity resulted in a considerable speedup compared to the recursive methods, and it was much faster for larger input sizes. The graph data confirmed the expected \(O(\log n)\) relationship between input size and execution time, making it a viable option for more extensive computations.
+
+The **Fast Doubling Method** further optimized the matrix exponentiation approach by leveraging the relationships between consecutive Fibonacci numbers. Like matrix exponentiation, it achieved \(O(\log n)\) time complexity but outperformed it in terms of execution speed. This method was the most efficient for large input sizes, providing both faster execution and maintaining accuracy in the results.
+
+The **Dynamic Programming Method** stored only the last two Fibonacci numbers at each step, which made it highly efficient. With \(O(n)\) time complexity and minimal space usage, this method performed excellently across all input sizes, being both fast and memory-efficient. It stands out as a reliable and optimal choice for computing Fibonacci numbers in practice.
+
+Lastly, the **Binet Formula** provided a fast way to calculate Fibonacci numbers using the Golden Ratio. However, this method became unreliable for large input sizes due to rounding errors that accumulated as the Fibonacci numbers grew. While it demonstrated fast execution for smaller numbers, the lack of accuracy with larger n makes it unsuitable for practical applications at scale.
+
+In conclusion, the **Dynamic Programming** and **Fast Doubling** methods emerged as the most efficient algorithms for calculating Fibonacci numbers, especially for large input sizes. The Memoized Recursive Method also offered a substantial improvement over the plain recursive method. Although the **Matrix Exponentiation** method is a strong candidate for moderately large Fibonacci numbers, **Fast Doubling** proved to be the best option overall in terms of both speed and accuracy. The **Binet Formula**, while fast, is not recommended for larger Fibonacci numbers due to its accuracy limitations.
