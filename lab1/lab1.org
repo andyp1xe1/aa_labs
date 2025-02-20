@@ -8,11 +8,11 @@
 #+LATEX_HEADER: \usepackage{hyperref}
 #+LATEX_HEADER: \input{lab_pre}
 #+LATEX_HEADER: \labno{1}
-#+LATEX_HEADER: \labtopic{Development of elaborations through the use of state diagrams and activity diagrams.}
+#+LATEX_HEADER: \labtopic{Study and Empirical Analysis of Algorithms for Determining Fibonacci N-th Term}
 
 #+INCLUDE: "lab_titlepage.tex" export latex
 
-* Algorithms Analysis
+* Analysis of Algorithms
 github url: \url{https://github.com/andyp1xe1/aa_labs/tree/main/lab1}
 
 ** Objective

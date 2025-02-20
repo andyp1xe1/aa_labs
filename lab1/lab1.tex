@@ -1,4 +1,4 @@
-% Created 2025-02-20 Thu 16:33
+% Created 2025-02-20 Thu 16:48
 % Intended LaTeX compiler: pdflatex
 \documentclass[a4paper,12pt]{article}
 \usepackage[utf8]{inputenc}
@@ -13,7 +13,7 @@
 \usepackage{hyperref}
 \input{lab_pre}
 \labno{1}
-\labtopic{Development of elaborations through the use of state diagrams and activity diagrams.}
+\labtopic{Study and Empirical Analysis of Algorithms for Determining Fibonacci N-th Term}
 
 %% ox-latex features:
 %   !announce-start, !guess-pollyglossia, !guess-babel, !guess-inputenc,
@@ -195,14 +195,14 @@ Department of \textsc{sea, fcim utm}
 Chișinău, 2024
 \end{titlepage}
 \setcounter{page}{2}
-\section{Algorithms Analysis}
-\label{sec:org6e812aa}
+\section{Analysis of Algorithms}
+\label{sec:org5117114}
 github url: \url{https://github.com/andyp1xe1/aa_labs/tree/main/lab1}
 \subsection{Objective}
-\label{sec:orgc251725}
+\label{sec:org30082b6}
 Study and analyze different algorithms for determining Fibonacci n-th term.
 \subsection{Tasks}
-\label{sec:orgffadf90}
+\label{sec:orgbfdde1a}
 \begin{enumerate}
 \item Implement at least 3 algorithms for determining Fibonacci n-th term;
 \item Decide properties of input format that will be used for algorithm analysis;
@@ -212,7 +212,7 @@ Study and analyze different algorithms for determining Fibonacci n-th term.
 \item Deduce conclusions of the laboratory.
 \end{enumerate}
 \subsection{Theoretical Notes}
-\label{sec:org46ae3ef}
+\label{sec:org41d3a40}
 An alternative to mathematical analysis of complexity is empirical analysis.
 This may be useful for: obtaining preliminary information on the complexity class of an
 algorithm; comparing the efficiency of two (or more) algorithms for solving the same problems;
@@ -244,7 +244,7 @@ After the execution of the program with the test data, the results are recorded 
 of the analysis, either synthetic quantities (mean, standard deviation, etc.) are calculated or a graph with
 appropriate pairs of points (i.e. problem size, efficiency measure) is plotted.
 \subsection{Introduction}
-\label{sec:orge3d65a9}
+\label{sec:org1e318ed}
 The Fibonacci sequence is the series of numbers where each number is the sum of the two
 preceding numbers. For example: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, …
 Mathematically we can describe this as: xn= xn-1 + xn-2.
@@ -272,23 +272,23 @@ As mentioned previously, the performance of an algorithm can be analyzed mathema
 (derived through mathematical reasoning) or empirically (based on experimental observations).
 Within this laboratory, we will be analyzing the 6 algorithms empirically.
 \subsection{Comparison Metric}
-\label{sec:org69341c8}
+\label{sec:org6dc4706}
 The comparison metric for this laboratory work will be considered the time of execution of each algorithm (T(n)).
 \subsection{Input Format}
-\label{sec:orgc4c5d8d}
+\label{sec:org0d10d57}
 As input, each algorithm will receive two series of numbers that will contain the order of the
 Fibonacci terms being looked up. The first series will have a more limited scope, (5, 7, 10, 12, 15, 17, 20,
 22, 25, 27, 30, 32, 35, 37, 40, 42, 45), to accommodate the recursive method, while the second series will
 have a bigger scope to be able to compare the other algorithms between themselves (501, 631, 794, 1000,
 1259, 1585, 1995, 2512, 3162, 3981, 5012, 6310, 7943, 10000, 12589, 15849).
 \section{Implementation}
-\label{sec:orgc6b129c}
+\label{sec:org3069a46}
 All four algorithms will be implemented in their naïve form in python an analyzed empirically.
 based on the time required for their completion. While the general trend of the results may be similar to
 other experimental observations, the particular efficiency in rapport with input will vary depending o
 memory of the device used.
 \subsection{Helper Code}
-\label{sec:orgd8f8d7c}
+\label{sec:org6dc8595}
 We will be plotting the performance of algorithms using \texttt{matplotlib}, by taking the time taken to compute numbers at even inrervals. For that we define a helper function:
 \begin{Code}
 \begin{Verbatim}
@@ -322,10 +322,10 @@ And we define our input lists:
 \end{Verbatim}
 \end{Code}
 \subsection{Recursive Method}
-\label{sec:org3131b41}
+\label{sec:org3b53166}
 The recursive Fibonacci implementation directly mirrors the mathematical recurrence relation Fn = Fn-1 + Fn-2. For each n, it recursively calculates F(n-1) and F(n-2) until reaching base cases of n=0 or n=1. While elegant, this creates an exponential time complexity of O(2\textsuperscript{n}) as it recomputes the same Fibonacci numbers many times. For example, computing F(4) requires computing F(3) and F(2), but F(3) also requires computing F(2) again.
 \subsubsection{Implementation}
-\label{sec:org35cc891}
+\label{sec:org05846e4}
 \begin{Code}
 \begin{Verbatim}
 \color{EFD}\EFk{def} \EFf{recursiveFib}(n):
@@ -335,7 +335,7 @@ The recursive Fibonacci implementation directly mirrors the mathematical recurre
 \end{Verbatim}
 \end{Code}
 \subsubsection{Results}
-\label{sec:org98cdcaf}
+\label{sec:org8aa1fea}
 Here we are running the function for every number in the list:
 \begin{Code}
 \begin{Verbatim}
@@ -345,13 +345,13 @@ Here we are running the function for every number in the list:
 
 \begin{center}
 \includegraphics[width=.9\linewidth]{recursiveFib.png}
-\label{org5b4a76a}
+\label{orga327050}
 \end{center}
 \subsection{Memoized Recursive}
-\label{sec:org9b637ed}
+\label{sec:org8848356}
 Memoization caches previously computed values to avoid redundant calculations.
 \subsubsection{Implementation}
-\label{sec:orgc5be178}
+\label{sec:org4ffd122}
 \begin{Code}
 \begin{Verbatim}
 \color{EFD}\EFk{def} \EFf{memoFib}(n, memo\textcolor[HTML]{000000}{=}\EFo{None}):
@@ -363,7 +363,7 @@ Memoization caches previously computed values to avoid redundant calculations.
 \end{Verbatim}
 \end{Code}
 \subsubsection{Results}
-\label{sec:orga110bf4}
+\label{sec:org7d2f43a}
 As expected, we achieve T(n) time complexity:
 \begin{Code}
 \begin{Verbatim}
@@ -373,17 +373,17 @@ As expected, we achieve T(n) time complexity:
 
 \begin{center}
 \includegraphics[width=.9\linewidth]{memoFib.png}
-\label{org6bf26ab}
+\label{org7880e48}
 \end{center}
 \subsection{Matrix Exponentiation}
-\label{sec:orgd07de13}
+\label{sec:org269d6fc}
 The matrix exponentiation method computes Fibonacci numbers in T(log n) time by exploiting the relationship between consecutive Fibonacci numbers and matrix multiplication. The key insight is that:
 
 \[ \begin{bmatrix} F_{n+1} & F_n \\ F_n & F_{n-1} \end{bmatrix} = \begin{bmatrix} 1 & 1 \\ 1 & 0 \end{bmatrix}^n \]
 
 Therefore, \(F_n\) can be computed by raising the base matrix to the nth power using fast exponentiation.
 \subsubsection{Implementation}
-\label{sec:org711ff9b}
+\label{sec:org88785a7}
 This will allow us to deal with overflows
 \begin{Code}
 \begin{Verbatim}
@@ -452,7 +452,7 @@ And the fibonacci function per-ce:
 \end{Verbatim}
 \end{Code}
 \subsubsection{Results}
-\label{sec:orgca12f6c}
+\label{sec:orge0c26b6}
 Here we measure the function, Roughly seeing the T(log n) complexity.
 \begin{Code}
 \begin{Verbatim}
@@ -462,10 +462,10 @@ Here we measure the function, Roughly seeing the T(log n) complexity.
 
 \begin{center}
 \includegraphics[width=.9\linewidth]{matrixExpoFib.png}
-\label{org4254972}
+\label{org403c6f1}
 \end{center}
 \subsection{Fast Doubling method}
-\label{sec:orgabf6b06}
+\label{sec:org889354d}
 The Matrix Exponentiation Method is already discussed before. The Doubling Method can be seen as an improvement to the matrix exponentiation method to find the N-th Fibonacci number although it doesn’t use matrix multiplication itself.
 
 The Fibonacci recursive sequence is given by 
@@ -482,7 +482,7 @@ F_{2n+1} = F_{n+1}^2 + F_n^2
 \end{align}
 Like matrix exponentiation, this achieves T(log n) time complexity through recursive doubling.
 \subsubsection{Implementation}
-\label{sec:orga789a1e}
+\label{sec:org3c4d57e}
 \begin{Code}
 \begin{Verbatim}
 \color{EFD}\EFk{def} \EFf{fastDoublingFib}(n):
@@ -503,7 +503,7 @@ Like matrix exponentiation, this achieves T(log n) time complexity through recur
 \end{Verbatim}
 \end{Code}
 \subsubsection{Results}
-\label{sec:org3e2166f}
+\label{sec:orgf333d80}
 Here we measure the function. As expected, it is much faster than the matrix exponentiation method, whilst still having resemblence of the \(log(n)\) graph.
 \begin{Code}
 \begin{Verbatim}
@@ -513,14 +513,14 @@ Here we measure the function. As expected, it is much faster than the matrix exp
 
 \begin{center}
 \includegraphics[width=.9\linewidth]{fastDoublingFib.png}
-\label{orgfea65e2}
+\label{orgdbd0233}
 \end{center}
 \subsection{Dinamic Programming}
-\label{sec:orgfea5a7b}
+\label{sec:org9cd461e}
 The Dynamic Programming method, similar to the recursive method, takes the straightforward approach of calculating the n-th term. However, instead of calling the function upon itself, it stores just the previous two values. The recurrence relation is:
 \[F_n = F_{n-1} + F_{n-2}\]
 \subsubsection{Implementation}
-\label{sec:org695147d}
+\label{sec:org0ea12da}
 \begin{Code}
 \begin{Verbatim}
 \color{EFD}\EFk{def} \EFf{dpFib}(n):
@@ -534,7 +534,7 @@ The Dynamic Programming method, similar to the recursive method, takes the strai
 
 This is optimal for computing a single Fibonacci number with respect to time complexity.
 \subsubsection{Results}
-\label{sec:orgb76e20f}
+\label{sec:org43a4f8e}
 Showing excellent results with a time
 complexity denoted in a corresponding graph of T(n):
 \begin{Code}
@@ -545,16 +545,16 @@ complexity denoted in a corresponding graph of T(n):
 
 \begin{center}
 \includegraphics[width=.9\linewidth]{dinamicFib.png}
-\label{orgac49d83}
+\label{org070cbde}
 \end{center}
 \subsection{Binet Formula Method}
-\label{sec:org537de3c}
+\label{sec:org6de399f}
 The Binet Formula Method is another unconventional way of calculating the n-th term of the
 Fibonacci series, as it operates using the Golden Ratio formula, or phi. However, due to its nature of
 requiring the usage of decimal numbers, at some point, the rounding error of python that accumulates,
 begins affecting the results significantly.
 \subsubsection{Implementation}
-\label{sec:org74a911b}
+\label{sec:org4ce674d}
 \begin{Code}
 \begin{Verbatim}
 \color{EFD}\EFk{import} math
@@ -571,7 +571,7 @@ begins affecting the results significantly.
 \end{Verbatim}
 \end{Code}
 \subsubsection{Results}
-\label{sec:orgd829af3}
+\label{sec:orgb9708d8}
 The errors starting with around 75-th number make the algorithm unusable in practice, despite its speed:
 \begin{Code}
 \begin{Verbatim}
@@ -583,7 +583,7 @@ f\EFs{"binet:}\EFo{\char92{}t\char92{}t}\{numBinet\}\EFo{\char92{}n}\EFs{vs fast
 \end{Code}
 
 \phantomsection
-\label{orgc8826f9}
+\label{org5e9c946}
 \begin{verbatim}
 binet:		1888569667134150
 vs fast doubling:	2111485077978050
@@ -601,10 +601,10 @@ And here is the performance graph:
 
 \begin{center}
 \includegraphics[width=.9\linewidth]{binetFormulaFib.png}
-\label{org0fb54c5}
+\label{org6ffa64d}
 \end{center}
 \section{Conclusions}
-\label{sec:org651ed86}
+\label{sec:orgb7af16d}
 In this laboratory, we analyzed various algorithms for calculating Fibonacci numbers, focusing on their empirical performance. Six distinct methods were implemented and tested: the Recursive Method, Memoized Recursive Method, Matrix Exponentiation, Fast Doubling Method, Dynamic Programming, and the Binet Formula. The main comparison metric was the execution time of each algorithm, measured across different input sizes.
 
 The basic \textbf{\textbf{Recursive Method}} demonstrated poor performance as the input size increased due to its exponential time complexity of \(O(2^n)\). This inefficiency was evident in the execution times, particularly for larger values of n, where the algorithm required excessive computation due to recalculating the same Fibonacci numbers multiple times.
