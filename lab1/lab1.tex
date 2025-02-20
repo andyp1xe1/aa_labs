@@ -1,25 +1,208 @@
-\documentclass[a4paper, 12pt]{article}
+% Created 2025-02-20 Thu 16:33
+% Intended LaTeX compiler: pdflatex
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\input{lab_pre}
+\labno{1}
+\labtopic{Development of elaborations through the use of state diagrams and activity diagrams.}
+
+%% ox-latex features:
+%   !announce-start, !guess-pollyglossia, !guess-babel, !guess-inputenc,
+%   engraved-code, maths, image, !announce-end.
+
+% Setup for code blocks [1/2]
+
+\usepackage{fvextra}
+
+\fvset{%
+  commandchars=\\\{\},
+  highlightcolor=white!95!black!80!blue,
+  breaklines=true,
+  breaksymbol=\color{white!60!black}\tiny\ensuremath{\hookrightarrow}}
+
+% Make line numbers smaller and grey.
+\renewcommand\theFancyVerbLine{\footnotesize\color{black!40!white}\arabic{FancyVerbLine}}
+
+\usepackage{xcolor}
+
+% In case engrave-faces-latex-gen-preamble has not been run.
+\providecolor{EfD}{HTML}{f7f7f7}
+\providecolor{EFD}{HTML}{28292e}
+
+% Define a Code environment to prettily wrap the fontified code.
+\usepackage[breakable,xparse]{tcolorbox}
+\providecommand{\codefont}{\footnotesize}
+\DeclareTColorBox[]{Code}{o}%
+{colback=EfD!98!EFD, colframe=EfD!95!EFD,
+  fontupper=\setlength{\fboxsep}{0pt}\codefont,
+  colupper=EFD,
+  IfNoValueTF={#1}%
+  {boxsep=2pt, arc=2.5pt, outer arc=2.5pt,
+    boxrule=0.5pt, left=2pt}%
+  {boxsep=2.5pt, arc=0pt, outer arc=0pt,
+    boxrule=0pt, leftrule=1.5pt, left=0.5pt},
+  right=2pt, top=1pt, bottom=0.5pt,
+  breakable}
+
+% Support listings with captions
+\usepackage{float}
+\floatstyle{plain}
+\newfloat{listing}{htbp}{lst}
+\newcommand{\listingsname}{Listing}
+\floatname{listing}{\listingsname}
+\newcommand{\listoflistingsname}{List of Listings}
+\providecommand{\listoflistings}{\listof{listing}{\listoflistingsname}}
+
+
+% Setup for code blocks [2/2]: syntax highlighting colors
+
+\newcommand\efstrut{\vrule height 2.1ex depth 0.8ex width 0pt}
+\definecolor{EFD}{HTML}{000000}
+\definecolor{EfD}{HTML}{ffffff}
+\newcommand{\EFD}[1]{\textcolor{EFD}{#1}} % default
+\definecolor{EFh}{HTML}{7f7f7f}
+\newcommand{\EFh}[1]{\textcolor{EFh}{#1}} % shadow
+\definecolor{EFsc}{HTML}{228b22}
+\newcommand{\EFsc}[1]{\textcolor{EFsc}{\textbf{#1}}} % success
+\definecolor{EFw}{HTML}{ff8e00}
+\newcommand{\EFw}[1]{\textcolor{EFw}{\textbf{#1}}} % warning
+\definecolor{EFe}{HTML}{ff0000}
+\newcommand{\EFe}[1]{\textcolor{EFe}{\textbf{#1}}} % error
+\definecolor{EFc}{HTML}{b22222}
+\newcommand{\EFc}[1]{\textcolor{EFc}{#1}} % font-lock-comment-face
+\definecolor{EFcd}{HTML}{b22222}
+\newcommand{\EFcd}[1]{\textcolor{EFcd}{#1}} % font-lock-comment-delimiter-face
+\definecolor{EFs}{HTML}{8b2252}
+\newcommand{\EFs}[1]{\textcolor{EFs}{#1}} % font-lock-string-face
+\definecolor{EFd}{HTML}{8b2252}
+\newcommand{\EFd}[1]{\textcolor{EFd}{#1}} % font-lock-doc-face
+\definecolor{EFm}{HTML}{008b8b}
+\newcommand{\EFm}[1]{\textcolor{EFm}{#1}} % font-lock-doc-markup-face
+\definecolor{EFk}{HTML}{9370db}
+\newcommand{\EFk}[1]{\textcolor{EFk}{#1}} % font-lock-keyword-face
+\definecolor{EFb}{HTML}{483d8b}
+\newcommand{\EFb}[1]{\textcolor{EFb}{#1}} % font-lock-builtin-face
+\definecolor{EFf}{HTML}{0000ff}
+\newcommand{\EFf}[1]{\textcolor{EFf}{#1}} % font-lock-function-name-face
+\definecolor{EFv}{HTML}{a0522d}
+\newcommand{\EFv}[1]{\textcolor{EFv}{#1}} % font-lock-variable-name-face
+\definecolor{EFt}{HTML}{228b22}
+\newcommand{\EFt}[1]{\textcolor{EFt}{#1}} % font-lock-type-face
+\definecolor{EFo}{HTML}{008b8b}
+\newcommand{\EFo}[1]{\textcolor{EFo}{#1}} % font-lock-constant-face
+\definecolor{EFwr}{HTML}{ff0000}
+\newcommand{\EFwr}[1]{\textcolor{EFwr}{\textbf{#1}}} % font-lock-warning-face
+\newcommand{\EFnc}[1]{#1} % font-lock-negation-char-face
+\definecolor{EFpp}{HTML}{483d8b}
+\newcommand{\EFpp}[1]{\textcolor{EFpp}{#1}} % font-lock-preprocessor-face
+\newcommand{\EFrc}[1]{\textbf{#1}} % font-lock-regexp-grouping-construct
+\newcommand{\EFrb}[1]{\textbf{#1}} % font-lock-regexp-grouping-backslash
+\newcommand{\EFob}[1]{#1} % org-block
+\definecolor{EFhn}{HTML}{008b8b}
+\newcommand{\EFhn}[1]{\textcolor{EFhn}{#1}} % highlight-numbers-number
+\definecolor{EFhq}{HTML}{9370db}
+\newcommand{\EFhq}[1]{\textcolor{EFhq}{#1}} % highlight-quoted-quote
+\definecolor{EFhs}{HTML}{008b8b}
+\newcommand{\EFhs}[1]{\textcolor{EFhs}{#1}} % highlight-quoted-symbol
+\definecolor{EFrda}{HTML}{707183}
+\newcommand{\EFrda}[1]{\textcolor{EFrda}{#1}} % rainbow-delimiters-depth-1-face
+\definecolor{EFrdb}{HTML}{7388d6}
+\newcommand{\EFrdb}[1]{\textcolor{EFrdb}{#1}} % rainbow-delimiters-depth-2-face
+\definecolor{EFrdc}{HTML}{909183}
+\newcommand{\EFrdc}[1]{\textcolor{EFrdc}{#1}} % rainbow-delimiters-depth-3-face
+\definecolor{EFrdd}{HTML}{709870}
+\newcommand{\EFrdd}[1]{\textcolor{EFrdd}{#1}} % rainbow-delimiters-depth-4-face
+\definecolor{EFrde}{HTML}{907373}
+\newcommand{\EFrde}[1]{\textcolor{EFrde}{#1}} % rainbow-delimiters-depth-5-face
+\definecolor{EFrdf}{HTML}{6276ba}
+\newcommand{\EFrdf}[1]{\textcolor{EFrdf}{#1}} % rainbow-delimiters-depth-6-face
+\definecolor{EFrdg}{HTML}{858580}
+\newcommand{\EFrdg}[1]{\textcolor{EFrdg}{#1}} % rainbow-delimiters-depth-7-face
+\definecolor{EFrdh}{HTML}{80a880}
+\newcommand{\EFrdh}[1]{\textcolor{EFrdh}{#1}} % rainbow-delimiters-depth-8-face
+\definecolor{EFrdi}{HTML}{887070}
+\newcommand{\EFrdi}[1]{\textcolor{EFrdi}{#1}} % rainbow-delimiters-depth-9-face
+
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{graphicx}
 
 %% end ox-latex features
 
 
-\input{lab_pre}
-
-\labno{1}
-\labtopic{Study and Empirical Analysis of Algorithms for Determining Fibonacci N-th Term}
-
-
+\date{\today}
+\title{Laboratory Work 1}
+\hypersetup{
+ pdfauthor={},
+ pdftitle={Laboratory Work 1},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 29.4 (Org mode 9.8-pre)},
+ pdflang={English}}
 \begin{document}
 
-\include{lab_titlepage}
+\begin{titlepage}
+\centering
 
-\section{Algorithm Analysis}
-\label{sec:orgc0ff396}
+\includegraphics[height=2cm]{utm_logo.png}
+
+\bfseries
+\textsc{Ministry of Education, Culture and Research of Republic of Moldova} \\
+\textsc{Technical University of Moldova} \\
+\textsc{Faculty of Computers, Informatics and Microelectronics} \\
+\textsc{Department of Software and Automation Engineering} \\
+\mdseries
+
+\vfill
+
+\textsc{\Large Analysis of Algorithms} \\
+\textsc{\large Laboratory work \#\Num}\\[0.5cm]
+
+\vspace{12pt}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\HRule \\[0.2cm]
+{ \LARGE \bfseries \Topic }\\[0.4cm]
+\HRule
+\vfill
+
+\begin{minipage}[t]{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Author:} \\
+Andrei Chicu\\                        
+std. gr. FAF--233
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}[t]{0.4\textwidth}
+\raggedleft \large
+\emph{Verified:} \\
+Fistic \\
+Department of \textsc{sea, fcim utm}
+\end{minipage}\\[3cm]
+\vfill
+
+Chișinău, 2024
+\end{titlepage}
+\setcounter{page}{2}
+\section{Algorithms Analysis}
+\label{sec:org6e812aa}
+github url: \url{https://github.com/andyp1xe1/aa_labs/tree/main/lab1}
 \subsection{Objective}
-\label{sec:orgbd7f39e}
+\label{sec:orgc251725}
 Study and analyze different algorithms for determining Fibonacci n-th term.
 \subsection{Tasks}
-\label{sec:orgdc320c1}
+\label{sec:orgffadf90}
 \begin{enumerate}
 \item Implement at least 3 algorithms for determining Fibonacci n-th term;
 \item Decide properties of input format that will be used for algorithm analysis;
@@ -29,7 +212,7 @@ Study and analyze different algorithms for determining Fibonacci n-th term.
 \item Deduce conclusions of the laboratory.
 \end{enumerate}
 \subsection{Theoretical Notes}
-\label{sec:org15e013d}
+\label{sec:org46ae3ef}
 An alternative to mathematical analysis of complexity is empirical analysis.
 This may be useful for: obtaining preliminary information on the complexity class of an
 algorithm; comparing the efficiency of two (or more) algorithms for solving the same problems;
@@ -61,7 +244,7 @@ After the execution of the program with the test data, the results are recorded 
 of the analysis, either synthetic quantities (mean, standard deviation, etc.) are calculated or a graph with
 appropriate pairs of points (i.e. problem size, efficiency measure) is plotted.
 \subsection{Introduction}
-\label{sec:orgdaa0968}
+\label{sec:orge3d65a9}
 The Fibonacci sequence is the series of numbers where each number is the sum of the two
 preceding numbers. For example: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, …
 Mathematically we can describe this as: xn= xn-1 + xn-2.
@@ -89,178 +272,200 @@ As mentioned previously, the performance of an algorithm can be analyzed mathema
 (derived through mathematical reasoning) or empirically (based on experimental observations).
 Within this laboratory, we will be analyzing the 6 algorithms empirically.
 \subsection{Comparison Metric}
-\label{sec:orgfae4a6a}
+\label{sec:org69341c8}
 The comparison metric for this laboratory work will be considered the time of execution of each algorithm (T(n)).
 \subsection{Input Format}
-\label{sec:org913c5ec}
+\label{sec:orgc4c5d8d}
 As input, each algorithm will receive two series of numbers that will contain the order of the
 Fibonacci terms being looked up. The first series will have a more limited scope, (5, 7, 10, 12, 15, 17, 20,
 22, 25, 27, 30, 32, 35, 37, 40, 42, 45), to accommodate the recursive method, while the second series will
 have a bigger scope to be able to compare the other algorithms between themselves (501, 631, 794, 1000,
 1259, 1585, 1995, 2512, 3162, 3981, 5012, 6310, 7943, 10000, 12589, 15849).
 \section{Implementation}
-\label{sec:org178d09a}
-All six algorithms will be implemented in their naïve form in python an analyzed empirically.
+\label{sec:orgc6b129c}
+All four algorithms will be implemented in their naïve form in python an analyzed empirically.
 based on the time required for their completion. While the general trend of the results may be similar to
-other experimental observations, the particular efficiency in rapport with input will vary depending on memory of the device used.
+other experimental observations, the particular efficiency in rapport with input will vary depending o
+memory of the device used.
 \subsection{Helper Code}
-\label{sec:orgf0edea2}
+\label{sec:orgd8f8d7c}
 We will be plotting the performance of algorithms using \texttt{matplotlib}, by taking the time taken to compute numbers at even inrervals. For that we define a helper function:
-\begin{verbatim}
-import time
-import matplotlib.pyplot as plt
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFk{import} time
+\EFk{import} matplotlib.pyplot \EFk{as} plt
 
-def plotFibPerformance(fibFunc, numList):
-    times = []
-    for n in numList:
-        start = time.perf_counter()
+\EFk{def} \EFf{plotFibPerformance}(fibFunc, numList):
+    \EFv{times} \textcolor[HTML]{000000}{=} []
+    \EFk{for} n \EFk{in} numList:
+        \EFv{start} \textcolor[HTML]{000000}{=} time.perf\_counter()
         fibFunc(n)
-        times.append(time.perf_counter() - start)
+        times.append(time.perf\_counter() \textcolor[HTML]{000000}{-} start)
 
-    plt.figure(figsize=(10, 6))
-    plt.plot(numList, times, 'bo-')
-    plt.xlabel('n-th Fibonacci Number')
-    plt.ylabel('Time (seconds)')
-    plt.title(f'Performance of {fibFunc.__name__}')
-    plt.grid(True)
+    plt.figure(figsize\textcolor[HTML]{000000}{=}(10, 6))
+    plt.plot(numList, times, \EFs{'bo-'})
+    plt.xlabel(\EFs{'n-th Fibonacci Number'})
+    plt.ylabel(\EFs{'Time (seconds)'})
+    plt.title(f\EFs{'Performance of }\{fibFunc.\EFb{\_\_name\_\_}\}\EFs{'})
+    plt.grid(\EFo{True})
 
-    #return times
-    return plt.gcf()
-\end{verbatim}
+    \EFcd{\#}\EFc{return times}
+    \EFk{return} plt.gcf()
+\end{Verbatim}
+\end{Code}
 
 And we define our input lists:
-\begin{verbatim}
-input1 = [5, 7, 10, 12, 15, 17, 20, 22, 25, 27, 30, 32, 35,]
-input2 = [501, 631, 794, 1000, 1259, 1585, 1995, 2512, 3162, 3981, 5012, 6310, 7943,]
-\end{verbatim}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFv{input1} \textcolor[HTML]{000000}{=} [5, 7, 10, 12, 15, 17, 20, 22, 25, 27, 30, 32, 35,]
+\EFv{input2} \textcolor[HTML]{000000}{=} [501, 631, 794, 1000, 1259, 1585, 1995, 2512, 3162, 3981, 5012, 6310, 7943,]
+\end{Verbatim}
+\end{Code}
 \subsection{Recursive Method}
-\label{sec:orgdd16fab}
+\label{sec:org3131b41}
 The recursive Fibonacci implementation directly mirrors the mathematical recurrence relation Fn = Fn-1 + Fn-2. For each n, it recursively calculates F(n-1) and F(n-2) until reaching base cases of n=0 or n=1. While elegant, this creates an exponential time complexity of O(2\textsuperscript{n}) as it recomputes the same Fibonacci numbers many times. For example, computing F(4) requires computing F(3) and F(2), but F(3) also requires computing F(2) again.
 \subsubsection{Implementation}
-\label{sec:org88fddfb}
-\begin{verbatim}
-def recursiveFib(n):
-    if n <= 1:  # Base cases
-        return n
-    return recursiveFib(n-1) + recursiveFib(n-2)
-\end{verbatim}
+\label{sec:org35cc891}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFk{def} \EFf{recursiveFib}(n):
+    \EFk{if} n \textcolor[HTML]{000000}{<=} 1:  \EFcd{\# }\EFc{Base cases}
+        \EFk{return} n
+    \EFk{return} recursiveFib(n\textcolor[HTML]{000000}{-}1) \textcolor[HTML]{000000}{+} recursiveFib(n\textcolor[HTML]{000000}{-}2)
+\end{Verbatim}
+\end{Code}
 \subsubsection{Results}
-\label{sec:orgd1d0c06}
+\label{sec:org98cdcaf}
 Here we are running the function for every number in the list:
-\begin{verbatim}
-plotFibPerformance(recursiveFib, input1)
-\end{verbatim}
-\begin{figure}[htbp]  % 'htbp' controls the placement (here, top, bottom, or page)
-  \centering  % Centers the figure
-  \includegraphics[width=\textwidth]{./recursiveFib.png}  % Include the image
-  \caption{Recursive Method}  % Caption for the figure
-  \label{fig:yourlabel}  % Label for referencing the figure
-\end{figure}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}plotFibPerformance(recursiveFib, input1)
+\end{Verbatim}
+\end{Code}
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{recursiveFib.png}
+\label{org5b4a76a}
+\end{center}
 \subsection{Memoized Recursive}
-\label{sec:org1ca3c80}
+\label{sec:org9b637ed}
 Memoization caches previously computed values to avoid redundant calculations.
 \subsubsection{Implementation}
-\label{sec:org9603c17}
-\begin{verbatim}
-def memoFib(n, memo=None):
-    if memo is None: memo = {}
-    if n <= 1: return n
-    if n not in memo:
-        memo[n] = memoFib(n-1, memo) + memoFib(n-2, memo)
-    return memo[n]
-\end{verbatim}
+\label{sec:orgc5be178}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFk{def} \EFf{memoFib}(n, memo\textcolor[HTML]{000000}{=}\EFo{None}):
+    \EFk{if} memo \EFk{is} \EFo{None}: memo \textcolor[HTML]{000000}{=} \{\}
+    \EFk{if} n \textcolor[HTML]{000000}{<=} 1: \EFk{return} n
+    \EFk{if} n \EFk{not} \EFk{in} memo:
+        \EFv{memo}[n] \textcolor[HTML]{000000}{=} memoFib(n\textcolor[HTML]{000000}{-}1, memo) \textcolor[HTML]{000000}{+} memoFib(n\textcolor[HTML]{000000}{-}2, memo)
+    \EFk{return} memo[n]
+\end{Verbatim}
+\end{Code}
 \subsubsection{Results}
-\label{sec:org3b0e4df}
+\label{sec:orga110bf4}
 As expected, we achieve T(n) time complexity:
-\begin{verbatim}
-plotFibPerformance(memoFib, input1)
-\end{verbatim}
-\begin{figure}[htbp]  % 'htbp' controls the placement (here, top, bottom, or page)
-  \centering  % Centers the figure
-  \includegraphics[width=\textwidth]{./memoFib.png}  % Include the image
-  \caption{Memoized Recursive}  % Caption for the figure
-\end{figure}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}plotFibPerformance(memoFib, input1)
+\end{Verbatim}
+\end{Code}
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{memoFib.png}
+\label{org6bf26ab}
+\end{center}
 \subsection{Matrix Exponentiation}
-\label{sec:org3016d6d}
+\label{sec:orgd07de13}
 The matrix exponentiation method computes Fibonacci numbers in T(log n) time by exploiting the relationship between consecutive Fibonacci numbers and matrix multiplication. The key insight is that:
 
 \[ \begin{bmatrix} F_{n+1} & F_n \\ F_n & F_{n-1} \end{bmatrix} = \begin{bmatrix} 1 & 1 \\ 1 & 0 \end{bmatrix}^n \]
 
 Therefore, \(F_n\) can be computed by raising the base matrix to the nth power using fast exponentiation.
 \subsubsection{Implementation}
-\label{sec:org518793c}
+\label{sec:org711ff9b}
 This will allow us to deal with overflows
-\begin{verbatim}
-MOD = 10**9 + 7
-\end{verbatim}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFv{MOD} \textcolor[HTML]{000000}{=} 10\textcolor[HTML]{000000}{**}9 \textcolor[HTML]{000000}{+} 7
+\end{Verbatim}
+\end{Code}
 
 Function to multiply two 2x2 Matrices:
-\begin{verbatim}
-def multiply(A, B):
-    # Matrix to store the result
-    C = [[0, 0], [0, 0]]
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFk{def} \EFf{multiply}(A, B):
+    \EFcd{\# }\EFc{Matrix to store the result}
+    \EFv{C} \textcolor[HTML]{000000}{=} [[0, 0], [0, 0]]
 
-    # Matrix Multiply
-    C[0][0] = (A[0][0] * B[0][0] + A[0][1] * B[1][0]) % MOD
-    C[0][1] = (A[0][0] * B[0][1] + A[0][1] * B[1][1]) % MOD
-    C[1][0] = (A[1][0] * B[0][0] + A[1][1] * B[1][0]) % MOD
-    C[1][1] = (A[1][0] * B[0][1] + A[1][1] * B[1][1]) % MOD
+    \EFcd{\# }\EFc{Matrix Multiply}
+    C[0][0] \textcolor[HTML]{000000}{=} (A[0][0] \textcolor[HTML]{000000}{*} B[0][0] \textcolor[HTML]{000000}{+} A[0][1] \textcolor[HTML]{000000}{*} B[1][0]) \textcolor[HTML]{000000}{\%} MOD
+    C[0][1] \textcolor[HTML]{000000}{=} (A[0][0] \textcolor[HTML]{000000}{*} B[0][1] \textcolor[HTML]{000000}{+} A[0][1] \textcolor[HTML]{000000}{*} B[1][1]) \textcolor[HTML]{000000}{\%} MOD
+    C[1][0] \textcolor[HTML]{000000}{=} (A[1][0] \textcolor[HTML]{000000}{*} B[0][0] \textcolor[HTML]{000000}{+} A[1][1] \textcolor[HTML]{000000}{*} B[1][0]) \textcolor[HTML]{000000}{\%} MOD
+    C[1][1] \textcolor[HTML]{000000}{=} (A[1][0] \textcolor[HTML]{000000}{*} B[0][1] \textcolor[HTML]{000000}{+} A[1][1] \textcolor[HTML]{000000}{*} B[1][1]) \textcolor[HTML]{000000}{\%} MOD
 
-    # Copy the result back to the first matrix
-    A[0][0] = C[0][0]
-    A[0][1] = C[0][1]
-    A[1][0] = C[1][0]
-    A[1][1] = C[1][1]
-\end{verbatim}
+    \EFcd{\# }\EFc{Copy the result back to the first matrix}
+    A[0][0] \textcolor[HTML]{000000}{=} C[0][0]
+    A[0][1] \textcolor[HTML]{000000}{=} C[0][1]
+    A[1][0] \textcolor[HTML]{000000}{=} C[1][0]
+    A[1][1] \textcolor[HTML]{000000}{=} C[1][1]
+\end{Verbatim}
+\end{Code}
 
 Function to find (Matrix \(M ^{expo}\))
-\begin{verbatim}
-def power(M, expo):
-    # Initialize result with identity matrix
-    ans = [[1, 0], [0, 1]]
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFk{def} \EFf{power}(M, expo):
+    \EFcd{\# }\EFc{Initialize result with identity matrix}
+    \EFv{ans} \textcolor[HTML]{000000}{=} [[1, 0], [0, 1]]
 
-    # Fast Exponentiation
-    while expo:
-        if expo & 1:
+    \EFcd{\# }\EFc{Fast Exponentiation}
+    \EFk{while} expo:
+        \EFk{if} expo \textcolor[HTML]{000000}{\&} 1:
             multiply(ans, M)
         multiply(M, M)
-        expo >>= 1
+        \EFv{expo} \textcolor[HTML]{000000}{>>=} 1
 
-    return ans
-\end{verbatim}
+    \EFk{return} ans
+\end{Verbatim}
+\end{Code}
 
 And the fibonacci function per-ce:
-\begin{verbatim}
-def matrixExpoFib(n):
-    # Base case
-    if n == 0 or n == 1:
-        return 1
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFk{def} \EFf{matrixExpoFib}(n):
+    \EFcd{\# }\EFc{Base case}
+    \EFk{if} n \textcolor[HTML]{000000}{==} 0 \EFk{or} n \textcolor[HTML]{000000}{==} 1:
+        \EFk{return} 1
 
-    M = [[1, 1], [1, 0]]
-    # F(0) = 0, F(1) = 1
-    F = [[1, 0], [0, 0]]
+    \EFv{M} \textcolor[HTML]{000000}{=} [[1, 1], [1, 0]]
+    \EFcd{\# }\EFc{F(0) = 0, F(1) = 1}
+    \EFv{F} \textcolor[HTML]{000000}{=} [[1, 0], [0, 0]]
 
-    # Multiply matrix M (n - 1) times
-    res = power(M, n - 1)
+    \EFcd{\# }\EFc{Multiply matrix M (n - 1) times}
+    \EFv{res} \textcolor[HTML]{000000}{=} power(M, n \textcolor[HTML]{000000}{-} 1)
 
-    # Multiply Resultant with Matrix F
+    \EFcd{\# }\EFc{Multiply Resultant with Matrix F}
     multiply(res, F)
 
-    return res[0][0] % MOD
-\end{verbatim}
+    \EFk{return} res[0][0] \textcolor[HTML]{000000}{\%} MOD
+\end{Verbatim}
+\end{Code}
 \subsubsection{Results}
-\label{sec:org8ce71eb}
+\label{sec:orgca12f6c}
 Here we measure the function, Roughly seeing the T(log n) complexity.
-\begin{verbatim}
-plotFibPerformance(matrixExpoFib, input2)
-\end{verbatim}
-\begin{figure}[htbp]  % 'htbp' controls the placement (here, top, bottom, or page)
-  \centering  % Centers the figure
-  \includegraphics[width=\textwidth]{./matrixExpoFib.png}  % Include the image
-  \caption{Matrix Exponentiation}  % Caption for the figure
-\end{figure}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}plotFibPerformance(matrixExpoFib, input2)
+\end{Verbatim}
+\end{Code}
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{matrixExpoFib.png}
+\label{org4254972}
+\end{center}
 \subsection{Fast Doubling method}
-\label{sec:org7e9f33e}
+\label{sec:orgabf6b06}
 The Matrix Exponentiation Method is already discussed before. The Doubling Method can be seen as an improvement to the matrix exponentiation method to find the N-th Fibonacci number although it doesn’t use matrix multiplication itself.
 
 The Fibonacci recursive sequence is given by 
@@ -277,128 +482,129 @@ F_{2n+1} = F_{n+1}^2 + F_n^2
 \end{align}
 Like matrix exponentiation, this achieves T(log n) time complexity through recursive doubling.
 \subsubsection{Implementation}
-\label{sec:org34c3070}
-\begin{verbatim}
-MOD = 1000000007
+\label{sec:orga789a1e}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFk{def} \EFf{fastDoublingFib}(n):
+    \EFk{return} \_fib(n)[0]
 
-def fastDoublingRec(n, res): 
-
-    # Base Condition 
-    if (n == 0): 
-        res[0] = 0
-        res[1] = 1
-        return
-
-    fastDoublingRec((n // 2), res) 
-
-    # Here a = F(n) 
-    a = res[0] 
-
-    # Here b = F(n+1) 
-    b = res[1] 
-
-    c = 2 * b - a 
-
-    if (c < 0): 
-        c += MOD 
-
-    # As F(2n) = F(n)[2F(n+1) – F(n)] 
-    # Here c = F(2n) 
-    c = (a * c) % MOD 
-
-    # As F(2n + 1) = F(n)^2 + F(n+1)^2 
-    # Here d = F(2n + 1) 
-    d = (a * a + b * b) % MOD 
-
-    # Check if N is odd 
-    # or even 
-    if (n % 2 == 0): 
-        res[0] = c 
-        res[1] = d 
-    else : 
-        res[0] = d 
-        res[1] = c + d 
-
-def fastDoublingFib(n):
-    res = [0] * 2
-    fastDoublingRec(n, res)
-    return res[0]
-\end{verbatim}
+\EFcd{\# }\EFc{Auxiliary method for Fast Doubling}
+\EFk{def} \EFf{\_fib}(n):
+    \EFk{if} n \textcolor[HTML]{000000}{==} 0:
+        \EFk{return} 0, 1
+    \EFk{else}:
+        \EFv{a}, \EFv{b} \textcolor[HTML]{000000}{=} \_fib(n \textcolor[HTML]{000000}{//} 2)
+        \EFv{c} \textcolor[HTML]{000000}{=} a \textcolor[HTML]{000000}{*} (b \textcolor[HTML]{000000}{*} 2 \textcolor[HTML]{000000}{-} a)
+        \EFv{d} \textcolor[HTML]{000000}{=} a \textcolor[HTML]{000000}{*} a \textcolor[HTML]{000000}{+} b \textcolor[HTML]{000000}{*} b
+        \EFk{if} n \textcolor[HTML]{000000}{\%} 2 \textcolor[HTML]{000000}{==} 0:
+            \EFk{return} c, d
+        \EFk{else}:
+            \EFk{return} d, c \textcolor[HTML]{000000}{+} d
+\end{Verbatim}
+\end{Code}
 \subsubsection{Results}
-\label{sec:org61d5a55}
+\label{sec:org3e2166f}
 Here we measure the function. As expected, it is much faster than the matrix exponentiation method, whilst still having resemblence of the \(log(n)\) graph.
-\begin{verbatim}
-plotFibPerformance(fastDoublingFib, input2)
-\end{verbatim}
-\begin{figure}[htbp]  % 'htbp' controls the placement (here, top, bottom, or page)
-  \centering  % Centers the figure
-  \includegraphics[width=\textwidth]{./fastDoublingFib.png}  % Include the image
-  \caption{Fast Doubling}  % Caption for the figure
-\end{figure}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}plotFibPerformance(fastDoublingFib, input2)
+\end{Verbatim}
+\end{Code}
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{fastDoublingFib.png}
+\label{orgfea65e2}
+\end{center}
 \subsection{Dinamic Programming}
-\label{sec:orgcc4a8d9}
+\label{sec:orgfea5a7b}
 The Dynamic Programming method, similar to the recursive method, takes the straightforward approach of calculating the n-th term. However, instead of calling the function upon itself, it stores just the previous two values. The recurrence relation is:
 \[F_n = F_{n-1} + F_{n-2}\]
 \subsubsection{Implementation}
-\label{sec:org27d0eab}
-\begin{verbatim}
-def dpFib(n):
-    if n <= 1: return n
-    a, b = 0, 1
-    for _ in range(2, n + 1):
-        a, b = b, a + b  # Store only previous two values
-    return b
-\end{verbatim}
+\label{sec:org695147d}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFk{def} \EFf{dpFib}(n):
+    \EFk{if} n \textcolor[HTML]{000000}{<=} 1: \EFk{return} n
+    \EFv{a}, \EFv{b} \textcolor[HTML]{000000}{=} 0, 1
+    \EFk{for} \_ \EFk{in} \EFb{range}(2, n \textcolor[HTML]{000000}{+} 1):
+        \EFv{a}, \EFv{b} \textcolor[HTML]{000000}{=} b, a \textcolor[HTML]{000000}{+} b  \EFcd{\# }\EFc{Store only previous two values}
+    \EFk{return} b
+\end{Verbatim}
+\end{Code}
 
 This is optimal for computing a single Fibonacci number with respect to time complexity.
 \subsubsection{Results}
-\label{sec:orgedda308}
+\label{sec:orgb76e20f}
 Showing excellent results with a time
 complexity denoted in a corresponding graph of T(n):
-\begin{verbatim}
-plotFibPerformance(dpFib, input2)
-\end{verbatim}
-\begin{figure}[htbp]  % 'htbp' controls the placement (here, top, bottom, or page)
-  \centering  % Centers the figure
-  \includegraphics[width=\textwidth]{./dinamicFib.png}  % Include the image
-  \caption{Dinamic Programming}  % Caption for the figure
-\end{figure}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}plotFibPerformance(dpFib, input2)
+\end{Verbatim}
+\end{Code}
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{dinamicFib.png}
+\label{orgac49d83}
+\end{center}
 \subsection{Binet Formula Method}
-\label{sec:orga791916}
+\label{sec:org537de3c}
 The Binet Formula Method is another unconventional way of calculating the n-th term of the
 Fibonacci series, as it operates using the Golden Ratio formula, or phi. However, due to its nature of
 requiring the usage of decimal numbers, at some point, the rounding error of python that accumulates,
 begins affecting the results significantly.
 \subsubsection{Implementation}
-\label{sec:org99be789}
-\begin{verbatim}
-import math
+\label{sec:org74a911b}
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFk{import} math
+\EFk{from} decimal \EFk{import} Decimal, Context, ROUND\_HALF\_EVEN
 
 
-input3 = [5, 7, 10, 12, 15, 17, 20, 22, 25, 27, 30, 32, 35, 47, 50, 55, 65, 70, 80, 100, 150, 166, 200]
+\EFv{input3} \textcolor[HTML]{000000}{=} [5, 7, 10, 12, 15, 17, 20, 22, 25, 27, 30, 32, 35, 47, 50, 55, 65, 70, 80, 100, 150, 166, 200]
 
-def binetFib(n):
-
-    # Golden ratio (phi) and its negative counterpart (psi)
-    phi = (1 + math.sqrt(5)) / 2
-    psi = (1 - math.sqrt(5)) / 2
-
-    # Compute Fibonacci number using full Binet's formula
-    return round((math.pow(phi, n) - math.pow(psi, n)) / math.sqrt(5))
-\end{verbatim}
+\EFk{def} \EFf{binetFib}(n):
+    \EFv{ctx} \textcolor[HTML]{000000}{=} Context(prec\textcolor[HTML]{000000}{=}60, rounding\textcolor[HTML]{000000}{=}ROUND\_HALF\_EVEN)
+    \EFv{phi} \textcolor[HTML]{000000}{=} Decimal((1 \textcolor[HTML]{000000}{+} Decimal(5\textcolor[HTML]{000000}{**}(1\textcolor[HTML]{000000}{/}2))))
+    \EFv{psi} \textcolor[HTML]{000000}{=} Decimal((1 \textcolor[HTML]{000000}{-} Decimal(5\textcolor[HTML]{000000}{**}(1\textcolor[HTML]{000000}{/}2))))
+    \EFk{return} \EFb{int}((ctx.power(phi, Decimal(n)) \textcolor[HTML]{000000}{-} ctx.power(psi, Decimal(n))) \textcolor[HTML]{000000}{/} (2 \textcolor[HTML]{000000}{**} n \textcolor[HTML]{000000}{*} Decimal(5 \textcolor[HTML]{000000}{*} (1\textcolor[HTML]{000000}{/}2))))
+\end{Verbatim}
+\end{Code}
 \subsubsection{Results}
-\label{sec:org9feab26}
-The errors starting with around 75-th number make the algorithm unusable in practice, despite its speed.
+\label{sec:orgd829af3}
+The errors starting with around 75-th number make the algorithm unusable in practice, despite its speed:
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}\EFv{numBinet} \textcolor[HTML]{000000}{=} binetFib(75)
+\EFv{numDoubl} \textcolor[HTML]{000000}{=} fastDoublingFib(75)
+\EFv{err} \textcolor[HTML]{000000}{=} \EFb{abs}(numBinet \textcolor[HTML]{000000}{-} numDoubl)
+f\EFs{"binet:}\EFo{\char92{}t\char92{}t}\{numBinet\}\EFo{\char92{}n}\EFs{vs fast doubling:}\EFo{\char92{}t}\{numDoubl\}\EFo{\char92{}n}\EFs{The error:}\EFo{\char92{}t}\{err\}\EFs{"}
+\end{Verbatim}
+\end{Code}
+
+\phantomsection
+\label{orgc8826f9}
 \begin{verbatim}
-plotFibPerformance(binetFib, input3)
+binet:		1888569667134150
+vs fast doubling:	2111485077978050
+The error:	222915410843900
 \end{verbatim}
-\begin{figure}[htbp]  % 'htbp' controls the placement (here, top, bottom, or page)
-  \centering  % Centers the figure
-  \includegraphics[width=\textwidth]{./binetFormulaFib.png}  % Include the image
-  \caption{Binet Formula}  % Caption for the figure
-\end{figure}
-\section{Conclusion}
-\label{sec:orgedc434d}
+
+
+
+And here is the performance graph:
+\begin{Code}
+\begin{Verbatim}
+\color{EFD}plotFibPerformance(binetFib, input3)
+\end{Verbatim}
+\end{Code}
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{binetFormulaFib.png}
+\label{org0fb54c5}
+\end{center}
+\section{Conclusions}
+\label{sec:org651ed86}
 In this laboratory, we analyzed various algorithms for calculating Fibonacci numbers, focusing on their empirical performance. Six distinct methods were implemented and tested: the Recursive Method, Memoized Recursive Method, Matrix Exponentiation, Fast Doubling Method, Dynamic Programming, and the Binet Formula. The main comparison metric was the execution time of each algorithm, measured across different input sizes.
 
 The basic \textbf{\textbf{Recursive Method}} demonstrated poor performance as the input size increased due to its exponential time complexity of \(O(2^n)\). This inefficiency was evident in the execution times, particularly for larger values of n, where the algorithm required excessive computation due to recalculating the same Fibonacci numbers multiple times.
