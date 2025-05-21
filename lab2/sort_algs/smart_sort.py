@@ -57,14 +57,6 @@ def is_nearly_sorted_v2(arr, min_run_ratio=0.7):
 
 
 def smart_sort(arr):
-    """
-    Universal sorting function that analyzes the input array and chooses
-    the most efficient sorting algorithm based on array characteristics.
-
-    Parameters:
-    arr (list): The array to be sorted in-place
-    """
-
     size = len(arr)
 
     # Handle empty or single element arrays

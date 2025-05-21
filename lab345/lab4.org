@@ -1,0 +1,454 @@
+#+title: Study and empirical analysis of algorithms: Dijkstra and Floyd-Warshall
+#+author: Andrei Chicu
+#+OPTIONS: title:nil toc:nil
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper,12pt]
+#+LATEX_HEADER: \input{lab_pre}
+#+LATEX_HEADER: \group{FAF--233}
+#+LATEX_HEADER: \prof{Fistic Cristofor}
+#+LATEX_HEADER: \profdep{sea, fcim utm}
+#+LATEX_HEADER: \labno{4}
+#+INCLUDE: "lab_titlepage.tex" export latex
+#+PROPERTY: HEADER-ARGS+ :eval no-export
+* Analysis of Algorithms
+github url: \url{https://github.com/andyp1xe1/aa_labs/tree/main/lab345}
+** Objective
+The objective of this laboratory work is to implement and analyze two fundamental shortest path algorithms: Dijkstra's algorithm and the Floyd-Warshall algorithm. The analysis aims to compare their performance across various graph types and sizes to understand their efficiency characteristics, time complexity behavior, and practical applications in different graph scenarios, with a specific focus on dynamic programming concepts used in Floyd-Warshall.
+** Tasks
+1 To study the dynamic programming method of designing algorithms.
+2 To implement in a programming language algorithms Dijkstra and Floyd–Warshall using dynamic programming.
+3 Do empirical analysis of these algorithms for a sparse graph and for a dense graph.
+4 Increase the number of nodes in graphs and analyze how this influences the algorithms. Make a graphical presentation of the data obtained
+5 To make a report.
+** Theoretical Notes
+*** Graph Theory Basics
+A graph G is a pair (V, E) where V is a set of vertices (nodes) and E is a set of edges connecting these vertices. In this laboratory work, we focus on directed weighted graphs where each edge has an associated weight or cost.
+
+*** Types of Graphs
+In this laboratory, we analyze the following types of graphs:
+
+**** Complete Graph
+Every vertex is connected to every other vertex, resulting in |V|(|V|-1) edges in a directed graph.
+
+#+begin_src python :session "slab4" :exports results :results graphics file value :file example_complete.png
+from graphs.graphs import generate_complete_graph
+from plothelpers.plots import plot_graph_example
+g = generate_complete_graph(6, seed=1)
+plot_graph_example(g, "Complete Graph (n=6)")
+#+end_src
+
+#+RESULTS:
+[[file:example_complete.png]]
+
+**** Dense Graph
+Has approximately 80% of the maximum possible edges.
+
+#+begin_src python :session "slab4" :exports results :results graphics file value :file example_dense.png
+from graphs.graphs import generate_dense_graph
+g = generate_dense_graph(6, seed=1)
+plot_graph_example(g, "Dense Graph (n=6)")
+#+end_src
+
+#+RESULTS:
+[[file:example_dense.png]]
+
+**** Sparse Graph
+Contains relatively few edges, approximately 2|V| edges.
+
+#+begin_src python :session "slab4" :exports results :results graphics file value :file example_sparse.png
+from graphs.graphs import generate_sparse_graph
+g = generate_sparse_graph(6, seed=1)
+plot_graph_example(g, "Sparse Graph (n=6)")
+#+end_src
+
+#+RESULTS:
+[[file:example_sparse.png]]
+
+**** Tree Graph
+Connected acyclic graph with exactly |V|-1 edges.
+
+#+begin_src python :session "slab4" :exports results :results graphics file value :file example_tree.png
+from graphs.graphs import generate_tree_graph
+g = generate_tree_graph(6)
+plot_graph_example(g, "Tree Graph (n=6)")
+#+end_src
+
+#+RESULTS:
+[[file:example_tree.png]]
+
+**** Connected Graph
+There exists a path between any pair of vertices.
+
+#+begin_src python :session "slab4" :exports results :results graphics file value :file example_connected.png
+from graphs.graphs import generate_connected_graph
+g = generate_connected_graph(6)
+plot_graph_example(g, "Connected Graph (n=6)")
+#+end_src
+
+#+RESULTS:
+[[file:example_connected.png]]
+
+**** Cyclic Graph
+Contains at least one cycle (a path that starts and ends at the same vertex).
+
+#+begin_src python :session "slab4" :exports results :results graphics file value :file example_cyclic.png
+from graphs.graphs import generate_cyclic_graph
+g = generate_cyclic_graph(6, seed=1)
+plot_graph_example(g, "Cyclic Graph (n=6)")
+#+end_src
+
+#+RESULTS:
+[[file:example_cyclic.png]]
+
+**** Acyclic Graph
+Contains no cycles (DAG - Directed Acyclic Graph).
+
+#+begin_src python :session "slab4" :exports results :results graphics file value :file example_acyclic.png
+from graphs.graphs import generate_acyclic_graph
+g = generate_acyclic_graph(10)
+plot_graph_example(g, "Acyclic Graph (n=10)")
+#+end_src
+
+#+RESULTS:
+[[file:example_acyclic.png]]
+
+**** Grid Graph
+Vertices arranged in a grid-like structure with connections primarily to adjacent nodes.
+
+#+begin_src python :session "slab4" :exports results :results graphics file value :file example_grid.png
+from graphs.graphs import generate_grid_graph
+g = generate_grid_graph(9)
+plot_graph_example(g, "Grid Graph (n=5)")
+#+end_src
+
+#+RESULTS:
+[[file:example_grid.png]]
+
+*** Dynamic Programming
+Dynamic programming is an algorithmic paradigm that solves complex problems by breaking them down into simpler subproblems and storing the solutions to avoid redundant computations. Key elements of dynamic programming include:
+
+1. **Optimal Substructure**: An optimal solution to the problem contains optimal solutions to its subproblems.
+2. **Overlapping Subproblems**: The same subproblems are solved multiple times, making caching (memoization) beneficial.
+
+The Floyd-Warshall algorithm is a classic example of dynamic programming applied to the all-pairs shortest path problem.
+
+*** Dijkstra's Algorithm
+Dijkstra's algorithm finds the shortest path from a source vertex to all other vertices in a weighted graph with non-negative edge weights. The algorithm works as follows:
+
+1. Initialize distances to all vertices as infinity and distance to source as 0.
+2. Create a priority queue and add the source vertex with distance 0.
+3. While the priority queue is not empty:
+   a. Extract the vertex with minimum distance value.
+   b. For each adjacent vertex, if the distance through current vertex is less than its current distance, update the distance and add to priority queue.
+4. After the algorithm completes, the distances array contains the shortest distance from source to all vertices.
+
+While Dijkstra's algorithm doesn't use dynamic programming in its pure form, it shares the principle of optimal substructure.
+
+*** Floyd-Warshall Algorithm
+Floyd-Warshall is a dynamic programming algorithm that finds shortest paths between all pairs of vertices in a weighted graph. The algorithm works as follows:
+
+1. Initialize the distance matrix with direct edge weights (or infinity if there's no edge).
+2. For each vertex k as an intermediate vertex:
+   a. For each pair of vertices (i,j):
+      i. If distance[i][j] > distance[i][k] + distance[k][j], update distance[i][j]
+3. After the algorithm completes, distance[i][j] contains the shortest path from vertex i to vertex j.
+
+This algorithm clearly demonstrates dynamic programming principles by systematically building solutions for all pairs using previously computed results.
+** Comparison Metric
+For this empirical analysis, we measure the following metrics:
+
+1. **Execution Time**: The primary metric is the actual execution time in seconds for each algorithm across different graph types and sizes. This provides an empirical measure of the algorithm's efficiency.
+
+3. **Memory Usage**: Indirectly measured by observing the maximum size of the data structures used.
+
+The algorithms are evaluated on various graph types with sizes ranging from 100 to 2500/10,000 vertices to observe how they scale with input size.
+
+#+begin_src python :session "slab4"
+sizes = [10, 50, 60, 70, 100]
+mid_sizes = [100, 200, 300, 500, 700, 1000]
+dj_sizes = [100, 500, 1000, 1500, 2000, 2500, 3000]
+#+end_src
+#+RESULTS:
+: None
+
+For each graph type and size, algorithms were executed with 5 repetitions to account for system variability and provide statistical robustness. This approach allows us to:
+
+- Calculate mean execution times for more reliable performance comparison
+- Determine standard deviation to assess result consistency and reliability
+- Identify potential outliers or anomalous behavior in specific test cases
+
+The error bars in the plots represent the standard deviation across these repetitions, providing a visual indication of measurement variability.
+
+** Input Format
+In this laboratory work, graphs are represented using adjacency lists implemented as nested Python dictionaries. Each vertex is a key in the outer dictionary, and its value is another dictionary mapping neighboring vertex IDs to edge weights.
+
+The testing framework generates graphs of various types and sizes, then executes both Dijkstra and Floyd-Warshall algorithms on them, measuring the execution time.
+
+Example input graph structure:
+#+begin_src python
+graph = {
+    '0': {'1': 5, '2': 3},
+    '1': {'3': 2, '4': 4},
+    '2': {},
+    '3': {},
+    '4': {'2': 1}
+}
+#+end_src
+
+In this representation:
+- Vertex '0' has edges to vertices '1' (weight 5) and '2' (weight 3)
+- Vertex '1' has edges to vertices '3' (weight 2) and '4' (weight 4)
+- Vertices '2' and '3' have no outgoing edges
+- Vertex '4' has an edge to vertex '2' (weight 1)
+
+All graphs are generated with the functions provided in the uploaded code, with vertices labeled as strings from '0' to 'n-1' and edge weights ranging from 1 to 10.
+* Implementation
+** Dijkstra's Algorithm
+Dijkstra's algorithm is implemented using a priority queue to efficiently select the vertex with the minimum distance in each iteration. The implementation maintains distances and visited status for all vertices.
+
+#+CAPTION: Implementation of Dijkstra's Algorithm
+#+NAME: lst:dijkstra
+#+ATTR_LATEX: :float placement=[H]
+#+INCLUDE: "./algs/dijkstra.py" src python
+
+** Floyd-Warshall Algorithm
+The Floyd-Warshall algorithm is implemented using dynamic programming principles, with a three-dimensional loop structure that considers each vertex as a potential intermediate node in shortest paths.
+
+#+CAPTION: Implementation of Floyd-Warshall Algorithm
+#+NAME: lst:floyd_warshall
+#+ATTR_LATEX: :float placement=[H]
+#+INCLUDE: "./algs/floyd_warshall.py" src python
+* Results 
+#+begin_src python :session "slab4" :exports none
+import sys
+from algs.dijkstra import dijkstra
+from algs.floyd_warshall import floyd_warshall
+from graphs.graphs import *
+from plothelpers.plots import *
+sys.setrecursionlimit(3000)
+funcs = [dijkstra, floyd_warshall]
+names = ["Dijkstra", "Floyd-Warshall"]
+#+end_src
+#+RESULTS:
+: None
+** Complete Graph
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_floyd_complete.png
+graph_name = "generate_complete_graph"
+generator = generate_complete_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, sizes)
+#+end_src
+#+RESULTS:
+[[file:dijkstra_floyd_complete.png]]
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_complete.png
+graph_name = "generate_complete_graph"
+generator = generate_complete_graph
+plot_performance(dijkstra, "Dijkstra", generator, graph_name, mid_sizes)
+#+end_src
+#+RESULTS:
+[[file:dijkstra_complete.png]]
+
+Both algorithms show a clear polynomial growth pattern as the graph size increases. Floyd-Warshall exhibits O(V³) complexity while Dijkstra (even with priority queue optimization) approaches O(V²) for complete graphs where E = O(V²).
+
+Floyd-Warshall consistently demonstrates higher execution times compared to Dijkstra, with the gap widening as graph size increases. This aligns with theoretical expectations given Floyd-Warshall's cubic complexity versus Dijkstra's near-quadratic behavior on complete graphs.
+
+For larger graph sizes (mid_sizes plot), Dijkstra maintains reasonable performance, showing the expected quadratic growth pattern as the number of vertices increases.
+
+Standard deviation is relatively small for both algorithms, indicating consistent performance across repetitions.
+
+** Dense Graph
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_floyd_dense.png
+graph_name = "generate_dense_graph"
+generator = generate_dense_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, sizes)
+#+end_src
+#+RESULTS:
+[[file:dijkstra_floyd_dense.png]]
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_dense.png
+graph_name = "generate_dense_graph"
+generator = generate_dense_graph
+plot_performance(dijkstra, "Dijkstra", generator, graph_name, mid_sizes)
+#+end_src
+
+#+RESULTS:
+[[file:dijkstra_dense.png]]
+
+In dense graphs (approximately 80% of maximum possible edges), both algorithms show similar performance patterns to complete graphs, with Floyd-Warshall requiring significantly more execution time.
+
+The execution time growth is polynomial, with Floyd-Warshall showing cubic growth O(V³) while Dijkstra demonstrates more efficient scaling with its priority queue implementation.
+
+For larger graph sizes, Dijkstra maintains reasonable scalability, although the execution time increases noticeably with the graph size due to the high edge density.
+
+The standard deviation values are low, indicating high consistency in measurement across test repetitions.
+
+** Sparse Graph
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_floyd_sparse.png
+graph_name = "generate_sparse_graph"
+generator = generate_sparse_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, sizes, repetitions=5)
+#+end_src
+#+RESULTS:
+[[file:dijkstra_floyd_sparse.png]]
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_sparse.png
+graph_name = "generate_sparse_graph"
+generator = generate_sparse_graph
+plot_performance(dijkstra, "Dijkstra", generator, graph_name, dj_sizes)
+#+end_src
+
+#+RESULTS:
+[[file:dijkstra_sparse.png]]
+
+For sparse graphs (with approximately 2|V| edges), both algorithms show different scaling patterns. Floyd-Warshall exhibits its characteristic cubic growth O(V³) regardless of edge density, while Dijkstra performs significantly better, leveraging its more efficient O((V+E)logV) complexity.
+
+Dijkstra's algorithm consistently outperforms Floyd-Warshall across all tested graph sizes, with the performance gap widening as the graph size increases.
+
+For larger graph sizes (in the dj_sizes plot), Dijkstra maintains excellent scalability even up to 3000 vertices, demonstrating its efficiency for single-source shortest path problems in sparse networks.
+
+The standard deviation is relatively small, indicating consistent performance across test repetitions.
+
+** Tree Graph
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_floyd_tree.png
+graph_name = "generate_tree_graph"
+generator = generate_tree_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, sizes)
+#+end_src
+#+RESULTS:
+[[file:dijkstra_floyd_tree.png]]
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_tree.png
+graph_name = "generate_tree_graph"
+generator = generate_tree_graph
+plot_performance(dijkstra, "Dijkstra", generator, graph_name, dj_sizes)
+#+end_src
+
+#+RESULTS:
+[[file:dijkstra_tree.png]]
+
+Tree graphs show a distinctive performance pattern between the two algorithms.
+
+Floyd-Warshall's execution time increases cubically with graph size, while Dijkstra shows near-linear growth due to the tree's minimal edge count (|V|-1 edges).
+
+In the larger graph size tests, Dijkstra processes tree structures extremely efficiently, reflecting its optimal performance characteristics when there are no alternative paths to consider.
+
+The standard deviation remains small relative to the mean values, showing measurement consistency.
+
+Dijkstra's algorithm particularly excels with tree structures because:
+- Each vertex is visited exactly once
+- No path recalculations are needed
+- The priority queue operations are minimized in this optimal scenario
+
+The negative values on the y-axis are likely visualization artifacts due to error bars extending below zero.
+
+** Connected Graph
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_floyd_connected.png
+graph_name = "generate_connected_graph"
+generator = generate_connected_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, sizes)
+#+end_src
+#+RESULTS:
+[[file:dijkstra_floyd_connected.png]]
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_connected.png
+graph_name = "generate_connected_graph"
+generator = generate_connected_graph
+plot_performance(dijkstra, "Dijkstra", generator, graph_name, dj_sizes)
+#+end_src
+
+#+RESULTS:
+[[file:dijkstra_connected.png]]
+
+In connected graphs, Floyd-Warshall demonstrates cubic time complexity while Dijkstra shows more efficient scaling behavior.
+
+For larger graph sizes, Dijkstra maintains good performance with execution time growing roughly proportionally to the product of edges and the logarithm of vertices.
+
+The standard deviation increases somewhat with graph size but remains proportionally small, indicating reliable measurements across test repetitions.
+
+** Cyclic Graph
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_floyd_cyclic.png
+graph_name = "generate_cyclic_graph"
+generator = generate_cyclic_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, sizes)
+#+end_src
+#+RESULTS:
+[[file:dijkstra_floyd_cyclic.png]]
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_cyclic.png
+graph_name = "generate_cyclic_graph"
+generator = generate_cyclic_graph
+plot_performance(dijkstra, "Dijkstra", generator, graph_name, dj_sizes)
+#+end_src
+
+#+RESULTS:
+[[file:dijkstra_cyclic.png]]
+
+For cyclic graphs, Floyd-Warshall shows its characteristic O(V³) growth pattern while Dijkstra maintains more efficient scaling.
+
+The comparison plot clearly demonstrates the increasing performance gap between the two algorithms as graph size grows, with Floyd-Warshall's execution time rising more steeply.
+
+For larger graph sizes, Dijkstra continues to perform efficiently, handling cycles well due to its distance-tracking mechanism that prevents inefficient revisiting of vertices.
+
+The standard deviation is moderate and increases with graph size, indicating reasonable measurement consistency.
+
+** Acyclic Graph
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_floyd_acyclic.png
+graph_name = "generate_acyclic_graph"
+generator = generate_acyclic_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, sizes)
+#+end_src
+#+RESULTS:
+[[file:dijkstra_floyd_acyclic.png]]
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_acyclic.png
+graph_name = "generate_acyclic_graph"
+generator = generate_acyclic_graph
+plot_performance(dijkstra, "Dijkstra", generator, graph_name, dj_sizes)
+#+end_src
+
+#+RESULTS:
+[[file:dijkstra_acyclic.png]]
+
+The acyclic graph tests show that Floyd-Warshall maintains its cubic complexity regardless of graph structure, while Dijkstra performs particularly well.
+
+Despite some measurement fluctuations, there is a clear trend showing Dijkstra's superior performance across all graph sizes.
+
+In the larger graph size tests, Dijkstra demonstrates excellent scalability with acyclic graphs since each vertex and edge needs to be processed at most once.
+
+The error bars indicate some variability across repetitions, which may be attributed to specific characteristics of the generated acyclic graphs or system scheduling effects.
+
+** Grid Graph
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_floyd_grid.png
+graph_name = "generate_grid_graph"
+generator = generate_grid_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, sizes)
+#+end_src
+#+RESULTS:
+[[file:dijkstra_floyd_grid.png]]
+#+begin_src python :session "slab4" :exports results :results graphics file value :file dijkstra_grid.png
+graph_name = "generate_grid_graph"
+generator = generate_grid_graph
+plot_performance(dijkstra, "Dijkstra", generator, graph_name, dj_sizes)
+#+end_src
+
+#+RESULTS:
+[[file:dijkstra_grid.png]]
+
+Grid graphs show a clear performance difference between Dijkstra and Floyd-Warshall algorithms.
+
+Both algorithms exhibit growth patterns consistent with their theoretical complexity, but Floyd-Warshall's cubic growth results in significantly higher execution times as graph size increases.
+
+For larger grid sizes, Dijkstra maintains efficient performance due to its ability to prioritize promising paths through the priority queue implementation.
+
+The standard deviation is small relative to the mean values, indicating consistent measurements.
+
+Dijkstra's advantage in grid graphs is particularly notable because the regular structure allows for efficient frontier expansion from the source vertex.
+
+* Conclusions
+
+This lab work shows clear differences between Dijkstra's algorithm and the Floyd-Warshall algorithm when used on different types of graphs. Both solve shortest path problems but work very differently as graphs get bigger.
+
+Floyd-Warshall always shows O(V³) time complexity no matter what the graph looks like. This matches what we expect from theory. The algorithm works by checking all possible paths through every vertex. It works well for finding all shortest paths at once, but becomes too slow for large graphs.
+
+Dijkstra's algorithm works much better for large graphs, especially sparse ones and tree structures where it's almost linear in performance. The priority queue helps it process vertices efficiently by their current distance. For finding paths from a single starting point, Dijkstra is always faster than Floyd-Warshall in our tests.
+
+As graphs get bigger, the speed difference between these algorithms grows very large. Dijkstra can handle thousands of vertices, while Floyd-Warshall becomes too slow after just a few hundred vertices.
+
+Grid and tree graphs show interesting results, with Dijkstra working very well because it can focus on the most promising paths first. Complete and dense graphs are harder for both algorithms, but Dijkstra still performs better.
+
+These results show why choosing the right algorithm matters. When you only need paths from one starting point, Dijkstra is better. When you need all possible paths and have small graphs, Floyd-Warshall is a good choice despite being slower.
+
+This lab work shows that we need to study both the theoretical complexity and actual performance to choose the best algorithm for real problems.

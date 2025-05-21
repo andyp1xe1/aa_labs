@@ -1,0 +1,402 @@
+#+title: Study and empirical analysis of algorithms: Dijkstra and Floyd-Warshall
+#+author: Andrei Chicu
+#+OPTIONS: title:nil toc:nil
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper,12pt]
+#+LATEX_HEADER: \input{lab_pre}
+#+LATEX_HEADER: \group{FAF--233}
+#+LATEX_HEADER: \prof{Fistic Cristofor}
+#+LATEX_HEADER: \profdep{sea, fcim utm}
+#+LATEX_HEADER: \labno{4}
+#+INCLUDE: "lab_titlepage.tex" export latex
+#+PROPERTY: HEADER-ARGS+ :eval no-export
+* Analysis of Algorithms
+github url: \url{https://github.com/andyp1xe1/aa_labs/tree/main/lab345}
+** Objective
+The objective of this laboratory work is to implement and analyze two fundamental shortest path algorithms: Dijkstra's algorithm and the Floyd-Warshall algorithm. The analysis aims to compare their performance across various graph types and sizes to understand their efficiency characteristics, time complexity behavior, and practical applications in different graph scenarios, with a specific focus on dynamic programming concepts used in Floyd-Warshall.
+** Tasks
+1 To study the dynamic programming method of designing algorithms.
+2 To implement in a programming language algorithms Dijkstra and Floyd–Warshall using dynamic programming.
+3 Do empirical analysis of these algorithms for a sparse graph and for a dense graph.
+4 Increase the number of nodes in graphs and analyze how this influences the algorithms. Make a graphical presentation of the data obtained
+5 To make a report.
+** Theoretical Notes
+*** Graph Theory Basics
+A graph G is a pair (V, E) where V is a set of vertices (nodes) and E is a set of edges connecting these vertices. In this laboratory work, we focus on directed weighted graphs where each edge has an associated weight or cost.
+
+*** Types of Graphs
+In this laboratory, we analyze the following types of graphs:
+
+**** Complete Graph
+Every vertex is connected to every other vertex, resulting in |V|(|V|-1) edges in a directed graph.
+
+#+begin_src python :session "slab3" :exports results :results graphics file value :file example_complete.png
+from graphs.graphs import generate_complete_graph
+from plothelpers.plots import plot_graph_example
+g = generate_complete_graph(6, seed=1)
+plot_graph_example(g, "Complete Graph (n=6)")
+#+end_src
+
+#+RESULTS:
+[[file:example_complete.png]]
+
+**** Dense Graph
+Has approximately 80% of the maximum possible edges.
+
+#+begin_src python :session "slab3" :exports results :results graphics file value :file example_dense.png
+from graphs.graphs import generate_dense_graph
+g = generate_dense_graph(6, seed=1)
+plot_graph_example(g, "Dense Graph (n=6)")
+#+end_src
+
+#+RESULTS:
+[[file:example_dense.png]]
+
+**** Sparse Graph
+Contains relatively few edges, approximately 2|V| edges.
+
+#+begin_src python :session "slab3" :exports results :results graphics file value :file example_sparse.png
+from graphs.graphs import generate_sparse_graph
+g = generate_sparse_graph(6, seed=1)
+plot_graph_example(g, "Sparse Graph (n=6)")
+#+end_src
+
+#+RESULTS:
+[[file:example_sparse.png]]
+
+**** Tree Graph
+Connected acyclic graph with exactly |V|-1 edges.
+
+#+begin_src python :session "slab3" :exports results :results graphics file value :file example_tree.png
+from graphs.graphs import generate_tree_graph
+g = generate_tree_graph(6)
+plot_graph_example(g, "Tree Graph (n=6)")
+#+end_src
+
+#+RESULTS:
+[[file:example_tree.png]]
+
+**** Connected Graph
+There exists a path between any pair of vertices.
+
+#+begin_src python :session "slab3" :exports results :results graphics file value :file example_connected.png
+from graphs.graphs import generate_connected_graph
+g = generate_connected_graph(6)
+plot_graph_example(g, "Connected Graph (n=6)")
+#+end_src
+
+#+RESULTS:
+[[file:example_connected.png]]
+
+**** Cyclic Graph
+Contains at least one cycle (a path that starts and ends at the same vertex).
+
+#+begin_src python :session "slab3" :exports results :results graphics file value :file example_cyclic.png
+from graphs.graphs import generate_cyclic_graph
+g = generate_cyclic_graph(6, seed=1)
+plot_graph_example(g, "Cyclic Graph (n=6)")
+#+end_src
+
+#+RESULTS:
+[[file:example_cyclic.png]]
+
+**** Acyclic Graph
+Contains no cycles (DAG - Directed Acyclic Graph).
+
+#+begin_src python :session "slab3" :exports results :results graphics file value :file example_acyclic.png
+from graphs.graphs import generate_acyclic_graph
+g = generate_acyclic_graph(10)
+plot_graph_example(g, "Acyclic Graph (n=10)")
+#+end_src
+
+#+RESULTS:
+[[file:example_acyclic.png]]
+
+**** Grid Graph
+Vertices arranged in a grid-like structure with connections primarily to adjacent nodes.
+
+#+begin_src python :session "slab3" :exports results :results graphics file value :file example_grid.png
+from graphs.graphs import generate_grid_graph
+g = generate_grid_graph(9)
+plot_graph_example(g, "Grid Graph (n=5)")
+#+end_src
+
+#+RESULTS:
+[[file:example_grid.png]]
+
+*** Dynamic Programming
+Dynamic programming is an algorithmic paradigm that solves complex problems by breaking them down into simpler subproblems and storing the solutions to avoid redundant computations. Key elements of dynamic programming include:
+
+1. **Optimal Substructure**: An optimal solution to the problem contains optimal solutions to its subproblems.
+2. **Overlapping Subproblems**: The same subproblems are solved multiple times, making caching (memoization) beneficial.
+
+The Floyd-Warshall algorithm is a classic example of dynamic programming applied to the all-pairs shortest path problem.
+
+*** Dijkstra's Algorithm
+Dijkstra's algorithm finds the shortest path from a source vertex to all other vertices in a weighted graph with non-negative edge weights. The algorithm works as follows:
+
+1. Initialize distances to all vertices as infinity and distance to source as 0.
+2. Create a priority queue and add the source vertex with distance 0.
+3. While the priority queue is not empty:
+   a. Extract the vertex with minimum distance value.
+   b. For each adjacent vertex, if the distance through current vertex is less than its current distance, update the distance and add to priority queue.
+4. After the algorithm completes, the distances array contains the shortest distance from source to all vertices.
+
+While Dijkstra's algorithm doesn't use dynamic programming in its pure form, it shares the principle of optimal substructure.
+
+*** Floyd-Warshall Algorithm
+Floyd-Warshall is a dynamic programming algorithm that finds shortest paths between all pairs of vertices in a weighted graph. The algorithm works as follows:
+
+1. Initialize the distance matrix with direct edge weights (or infinity if there's no edge).
+2. For each vertex k as an intermediate vertex:
+   a. For each pair of vertices (i,j):
+      i. If distance[i][j] > distance[i][k] + distance[k][j], update distance[i][j]
+3. After the algorithm completes, distance[i][j] contains the shortest path from vertex i to vertex j.
+
+This algorithm clearly demonstrates dynamic programming principles by systematically building solutions for all pairs using previously computed results.
+** Comparison Metric
+For this empirical analysis, we measure the following metrics:
+
+1. **Execution Time**: The primary metric is the actual execution time in seconds for each algorithm across different graph types and sizes. This provides an empirical measure of the algorithm's efficiency.
+
+3. **Memory Usage**: Indirectly measured by observing the maximum size of the data structures used.
+
+The algorithms are evaluated on various graph types with sizes ranging from 100 to 2500/10,000 vertices to observe how they scale with input size.
+
+#+begin_src python :session "slab3"
+sizes = [100, 200, 500, 1000, 1000, 2000, 2500]
+big_sizes = [200, 500, 1000, 1000, 2000, 2500, 3000, 3500, 4000, 5000, 6000, 7000, 8000, 9000, 10_000]
+#+end_src
+#+RESULTS:
+: None
+
+For each graph type and size, algorithms were executed with 5 repetitions to account for system variability and provide statistical robustness. This approach allows us to:
+
+- Calculate mean execution times for more reliable performance comparison
+- Determine standard deviation to assess result consistency and reliability
+- Identify potential outliers or anomalous behavior in specific test cases
+
+The error bars in the plots represent the standard deviation across these repetitions, providing a visual indication of measurement variability.
+
+** Input Format
+In this laboratory work, graphs are represented using adjacency lists implemented as nested Python dictionaries. Each vertex is a key in the outer dictionary, and its value is another dictionary mapping neighboring vertex IDs to edge weights.
+
+The testing framework generates graphs of various types and sizes, then executes both Dijkstra and Floyd-Warshall algorithms on them, measuring the execution time.
+
+Example input graph structure:
+#+begin_src python
+graph = {
+    '0': {'1': 5, '2': 3},
+    '1': {'3': 2, '4': 4},
+    '2': {},
+    '3': {},
+    '4': {'2': 1}
+}
+#+end_src
+
+In this representation:
+- Vertex '0' has edges to vertices '1' (weight 5) and '2' (weight 3)
+- Vertex '1' has edges to vertices '3' (weight 2) and '4' (weight 4)
+- Vertices '2' and '3' have no outgoing edges
+- Vertex '4' has an edge to vertex '2' (weight 1)
+
+All graphs are generated with the functions provided in the uploaded code, with vertices labeled as strings from '0' to 'n-1' and edge weights ranging from 1 to 10.
+* Implementation
+** Dijkstra's Algorithm
+Dijkstra's algorithm is implemented using a priority queue to efficiently select the vertex with the minimum distance in each iteration. The implementation maintains distances and visited status for all vertices.
+
+#+CAPTION: Implementation of Dijkstra's Algorithm
+#+NAME: lst:dijkstra
+#+ATTR_LATEX: :float placement=[H]
+#+INCLUDE: "./algs/dijkstra.py" src python
+
+** Floyd-Warshall Algorithm
+The Floyd-Warshall algorithm is implemented using dynamic programming principles, with a three-dimensional loop structure that considers each vertex as a potential intermediate node in shortest paths.
+
+#+CAPTION: Implementation of Floyd-Warshall Algorithm
+#+NAME: lst:floyd_warshall
+#+ATTR_LATEX: :float placement=[H]
+#+INCLUDE: "./algs/floyd_warshall.py" src python
+* Results 
+#+begin_src python :session "slab3" :exports none
+import sys
+from algs.dfs import dfs
+from algs.bfs import bfs
+from graphs.graphs import *
+from plothelpers.plots import *
+sys.setrecursionlimit(3000)
+funcs = [dijkstra_wrapper, floyd_warshall_wrapper]
+names = ["Dijkstra", "Floyd-Warshall"]
+#+end_src
+#+RESULTS:
+: None
+** Complete Graph
+#+begin_src python :session "slab3" :exports results :results graphics file value :file dijkstra_floyd_complete.png
+graph_name = "generate_complete_graph"
+generator = generate_complete_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, sizes)
+#+end_src
+#+RESULTS:
+[[file:dfs_complete.png]]
+Both algorithms show a clear polynomial growth pattern as the graph size increases, consistent with their O(V+E) complexity where E = O(V²) for complete graphs.
+
+DFS consistently demonstrates higher execution times compared to BFS, with the gap widening as graph size increases. At 2500 vertices, DFS takes approximately 0.43 seconds while BFS requires around 0.30 seconds.
+
+The performance difference is likely due to the recursive implementation of DFS versus the iterative implementation of BFS, which incurs additional function call overhead.
+
+Standard deviation is relatively small for both algorithms, indicating consistent performance across repetitions.
+
+** Dense Graph
+#+begin_src python :session "slab3" :exports results :results graphics file value :file dijkstra_floyd_dense.png
+graph_name = "generate_dense_graph"
+generator = generate_dense_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, sizes)
+#+end_src
+#+RESULTS:
+[[file:dfs_dense.png]]
+
+In dense graphs (approximately 80% of maximum possible edges), both algorithms show nearly identical performance profiles.
+
+The execution time growth is polynomial, matching the theoretical expectation for graphs where E ≈ O(V²).
+
+Unlike in complete graphs, the performance difference between DFS and BFS is minimal, suggesting that the overhead of recursion in DFS is offset by other factors in dense but not complete graphs.
+
+The execution times reach approximately 0.5 seconds at 2500 vertices for both algorithms.
+Low standard deviation values indicate high consistency in measurement.
+
+** Sparse Graph
+#+begin_src python :session "slab3" :exports results :results graphics file value :file dijkstra_floyd_sparse.png
+graph_name = "generate_sparse_graph"
+generator = generate_sparse_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, big_sizes, repetitions=5)
+#+end_src
+#+RESULTS:
+[[file:dfs_sparse.png]]
+
+For sparse graphs (with approximately 2|V| edges), both algorithms exhibit a more linear growth pattern, consistent with their theoretical O(V+E) complexity where E = O(V).
+
+DFS consistently performs worse than BFS across all graph sizes, with the gap becoming more pronounced as the graph size increases.
+
+At 10,000 vertices, DFS requires approximately 0.014 seconds while BFS takes around 0.011 seconds.
+
+The standard deviation is relatively higher compared to other graph types, particularly for larger graph sizes, indicating some variability in performance measurements.
+
+The performance advantage of BFS may be attributed to its level-by-level exploration, which could be more efficient in sparse graphs where most paths are relatively long.
+
+** Tree Graph
+#+begin_src python :session "slab3" :exports results :results graphics file value :file dijkstra_floyd_tree.png
+graph_name = "generate_tree_graph"
+generator = generate_tree_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, big_sizes)
+#+end_src
+#+RESULTS:
+[[file:dfs_tree.png]]
+
+Tree graphs show the most unusual performance pattern among all tested graph types.
+
+The execution times are extremely small (in the order of 10⁻⁵ seconds) even for large graphs with up to 10,000 vertices.
+
+There is no clear trend in performance as graph size increases, with some larger graphs actually showing faster execution times than smaller ones.
+
+The standard deviation is proportionally very large, often comparable to or exceeding the mean execution time.
+The unusual behavior might be attributed to:
+- Highly efficient traversal of tree structures
+- Caching effects becoming significant at these small time scales
+- System timing resolution limitations at microsecond scales
+
+The negative values on the y-axis are likely visualization artifacts due to error bars extending below zero.
+
+** Connected Graph
+#+begin_src python :session "slab3" :exports results :results graphics file value :file dijkstra_floyd_connected.png
+graph_name = "generate_connected_graph"
+generator = generate_connected_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, big_sizes)
+#+end_src
+#+RESULTS:
+[[file:dfs_connected.png]]
+
+Both algorithms show a linear growth pattern, consistent with O(V+E) complexity when E is proportional to V.
+
+DFS performs slightly worse than BFS at larger graph sizes, but the difference is minimal compared to other graph types.
+
+At 10,000 vertices, DFS takes approximately 0.011 seconds while BFS requires around 0.009 seconds.
+
+The standard deviation increases with graph size but remains relatively consistent between the two algorithms.
+
+The minimal performance difference suggests that both algorithms are well-suited for connected graphs with moderate edge density.
+
+** Cyclic Graph
+#+begin_src python :session "slab3" :exports results :results graphics file value :file dijkstra_floyd_cyclic.png
+graph_name = "generate_cyclic_graph"
+generator = generate_cyclic_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, sizes)
+#+end_src
+#+RESULTS:
+[[file:dfs_cyclic.png]]
+
+Both algorithms show a linear growth pattern up to 2000 vertices, after which BFS maintains linear growth while DFS begins to exhibit slightly faster growth.
+
+At 2500 vertices, DFS takes approximately 0.0027 seconds while BFS requires around 0.0015 seconds.
+
+BFS appears to handle cycles more efficiently than DFS, possibly because it avoids the deep recursion that can occur when DFS encounters cycles.
+
+The standard deviation is moderate and increases with graph size, indicating reasonable measurement consistency.
+
+** Acyclic Graph
+#+begin_src python :session "slab3" :exports results :results graphics file value :file dijkstra_floyd_acyclic.png
+graph_name = "generate_acyclic_graph"
+generator = generate_acyclic_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, big_sizes)
+#+end_src
+#+RESULTS:
+[[file:dfs_acyclic.png]]
+
+The acyclic graph tests show the most erratic behavior among all graph types, with significant fluctuations in execution time across different graph sizes.
+
+Despite the fluctuations, there is a general upward trend in execution time as graph size increases.
+
+BFS generally outperforms DFS, particularly at larger graph sizes.
+The error bars are exceptionally large, indicating high variability across repetitions.
+
+The erratic behavior might be attributed to:
+- Specific topological characteristics of the generated acyclic graphs
+- Memory access patterns that vary significantly between runs
+- System scheduling effects becoming more pronounced
+
+** Grid Graph
+#+begin_src python :session "slab3" :exports results :results graphics file value :file dijkstra_floyd_grid.png
+graph_name = "generate_grid_graph"
+generator = generate_grid_graph
+plot_algorithm_comparison(funcs, names, generator, graph_name, big_sizes)
+#+end_src
+#+RESULTS:
+[[file:dfs_grid.png]]
+
+Grid graphs show one of the clearest performance differences between DFS and BFS.
+
+Both algorithms exhibit linear growth with graph size, but DFS shows a steeper slope.
+
+At 10,000 vertices, DFS requires approximately 0.0097 seconds while BFS takes around 0.006 seconds.
+
+The performance gap widens consistently as graph size increases, with BFS maintaining a roughly 40% advantage at the largest sizes.
+
+The standard deviation is small relative to the mean values, indicating consistent measurements.
+
+BFS's advantage in grid graphs is likely due to its level-by-level exploration pattern, which aligns well with the regular structure of grid graphs.
+
+* Conclusions
+
+This laboratory work demonstrates that while DFS and BFS have the same theoretical time complexity (O(V+E)), their practical performance can vary based on graph structure and implementation details. The choice between these algorithms should consider not only execution time but also the specific requirements of the application, such as path characteristics, memory constraints, and the expected graph structure.
+
+The empirical analysis confirms that while DFS and BFS share the same theoretical time complexity of O(V+E), their practical performance characteristics differ significantly depending on graph structure
+
+BFS is generally more efficient across most graph types, particularly for grid structures and large graphs.
+The performance advantage of BFS becomes more pronounced as graph size increases. For complete graphs and some specialized applications where depth-priority is beneficial, DFS may still be appropriate.
+
+The recursive implementation of DFS introduces overhead that impacts real-world performance. An iterative implementation of DFS might reduce this gap. The choice between recursive and iterative implementations represents a trade-off between code clarity and performance.
+
+Most graph types show consistent performance across repetitions, as evidenced by relatively small standard deviations. Tree graphs and acyclic graphs show higher variability, suggesting that performance for these specific structures may be more sensitive to system conditions.
+
+Both algorithms scale according to theoretical predictions based on the relationship between vertices and edges. The practical growth rate is highly dependent on graph structure and edge density
+
+These findings demonstrate the importance of empirical analysis to complement theoretical complexity analysis, as implementation details and structural characteristics can significantly impact real-world algorithm performance.
